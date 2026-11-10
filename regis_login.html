@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear cuenta</title>
+    <link rel="stylesheet" href="styles.css">
+   
+</head>
+<body>
+
+    <header>
+        <div class="portal-title">Portal</div>
+        <div class="header-controls">
+            <select class="language-select" aria-label="Idioma">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+            </select>
+            <div class="menu-container">
+                <button class="menu-btn" id="menuBtn" aria-label="Menú de opciones" aria-expanded="false" title="Menú">☰</button>
+                <div class="dropdown-content" id="dropdownMenu">
+                    <ul>
+                                                
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="login.html">Iniciar sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+
+
+    <main>
+        <div class="login-card">
+            <div class="logo-container">
+            <img src="images/registro.png" alt="Ini-Sesion" class="login-img">
+            </div>
+
+            <div class="form-group">
+            <h1 id="titulo">Crear cuenta</h1>
+            </div>
+
+            <!-- Paso 1: elegir el tipo de cuenta (solo aquí se pregunta) -->
+            <div id="paso-tipo">
+            
+            <div class="form-group">
+                <label class="QueTipo">¿Qué tipo de cuenta quieres crear?</label>
+            </div>
+
+                <div class="tipo-opciones">
+                    <button type="button" class="btn-submit" data-tipo="graduado">Graduado o estudiante</button>
+                    <button type="button" class="btn-submit" data-tipo="empresa">Empresa</button>
+                </div>
+                
+            </div>
+
+
+
+
+            <!-- Paso 2A: formulario de graduado o estudiante -->
+            <form id="form-graduado" class="form-oculto" data-tipo="graduado">
+                    <label for="g-apellido">Apellidos</label>
+                <div class="form-group">
+                    <input type="text" id="g-apellido" name="g-apellido" required placeholder="Ej: Arevalo Melara">
+                </div>
+
+                <label for="g-nombre">Nombres</label>
+                <div class="form-group">
+                    <input type="text" id="g-nombre" name="g-nombre" required placeholder="Ej: Juan Natanael">
+                </div>
+
+                    <label for="g-correo">Correo electrónico</label>
+                <div class="form-group">
+                    <input type="email" id="g-correo" name="g-correo" required placeholder="Ej: estudiante@gmail.com"   pattern="[^\s@]+@[^\s@]+\.[A-Za-z]{2,}">
+                </div>
+
+                    <label for="g-celular">Número de celular</label>
+                <div class="form-group">
+                    <input type="tel" id="g-telefono" name="g-telefono" required placeholder="Ej: +503 2222-3333"  pattern="\+?(?=(?:[^0-9]*[0-9]){8,15}$)[0-9][0-9\s\-]*[0-9]">
+                </div>
+
+                    <label for="g-carnet">Carnet</label>
+                <div class="form-group">
+                    <input type="text" id="g-carnet" name="g-carnet" required placeholder="Ej: RC23011" pattern="^[A-Z]{2}[0-9]{3,6}$" title="El carné debe iniciar con dos letras mayúsculas seguidas de números (Ej: RC23011)">
+                </div>
+
+                    <label for="g-situacion">Situación</label>
+                <div class="form-group">
+                    <select id="g-situacion" name="g-situacion" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="graduado">Graduado</option>
+                        <option value="egresado">Egresado</option>
+                        <option value="quinto">Estudiante de quinto año o en trámite de graduación</option>
+                    </select>
+                </div>
+                
+
+                    <label for="g-anio">Año de graduación o de egreso</label>
+                <div class="form-group">
+                    <select id="g-anio" name="g-anio" disabled required>
+                        <option value="" disabled selected>Seleccione su año</option>
+                    </select>
+                </div>
+
+                    <label for="g-clave">Contraseña</label>
+                <div class="campo-clave">
+                    <input type="password" id="g-clave" name="g-clave" required minlength="8" placeholder="Minimo 8 caracteres">
+                    <button type="button"class="ver-clave" aria-label="Mostrar contraseña" aria-pressed="false">Mostrar</button>
+                </div>
+
+                <button type="submit" class="btn-submit">Solicitar cuenta</button>
+
+                <div class="links">
+                <a href="#" class="cambiar-tipo">Cambiar tipo de cuenta</a>                
+                </div>
+
+            </form>
+
+
+
+
+            <!-- Paso 2B: formulario de empresa -->
+            <form id="form-empresa" class="form-oculto" data-tipo="empresa">
+
+                    <label for="e-empresa">Nombre de la empresa</label>
+                <div class="form-group">
+                    <input type="text" id="e-empresa" name="e-empresa" required placeholder="Ej: Central American Software Services">
+                </div>
+
+                    <label for="e-correo">Correo electrónico</label>
+                <div class="form-group">
+                    <input type="email" id="e-correo" name="e-correo" required placeholder="Ej: empresa@gmail.com"   pattern="[^\s@]+@[^\s@]+\.[A-Za-z]{2,}">
+                </div>
+
+                    <label for="e-contacto">Persona de contacto</label>
+                <div class="form-group">
+                    <input type="text" id="e-contacto" name="e-contacto" required placeholder="Ej: Ramon Alberto Muñoz Gonzales">
+                </div>
+
+                    <label for="e-telefono">Teléfono de contacto</label>
+                <div class="form-group">
+                    <input type="tel" id="e-telefono" name="e-telefono" required placeholder="Ej: +503 2222-3333"  pattern="\+?(?=(?:[^0-9]*[0-9]){8,15}$)[0-9][0-9\s\-]*[0-9]">
+                </div>
+
+                    <label for="e-web">Sitio web</label>
+                <div class="form-group">
+                    <input type="url" id="e-web" name="e-web" placeholder="https://empresa.com.sv">
+                </div>
+
+                    <label for="e-clave">Contraseña</label>
+                <div class="campo-clave">
+                    <input type="password" id="e-clave" name="e-clave" required minlength="8" pattern="(?=.*[A-Za-z])(?=.*[0-9]).{8,}" placeholder="Minimo 8 caracteres">
+
+                    <button type="button"class="ver-clave" aria-label="Mostrar contraseña" aria-pressed="false">Mostrar</button>
+                </div>
+
+                <div class="terminos">
+                    <input type="checkbox" id="e-terminos" name="e-terminos" required>
+                    <label for="e-terminos"> Declaro que la información proporcionada es verídica y que represento a esta empresa.
+                                             Acepto los <a href="terminos.html" target="_blank" rel="noopener">términos y condiciones</a>.
+                    </label>
+                </div>
+
+
+                <button type="submit" class="btn-submit">Solicitar cuenta</button>
+
+                <div class="links">
+                    <a href="#" class="cambiar-tipo">Cambiar tipo de cuenta</a>                
+                </div>
+
+            </form>
+
+            <!-- Paso 3: solicitud enviada -->
+            <div id="paso-listo" class="form-oculto aviso" role="status">
+                <strong>Solicitud de Registro enviada.</strong>
+                Su cuenta queda pendiente hasta que la administracion la apruebe.
+                Cuando esté lista podrá 
+                 <div class="links"><a href="index.html">iniciar sesión</a></div>
+            </div>
+        </div>
+    </main>
+
+<script src="appJS/general.js"></script>
+<script src="appJS/logins.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="portal-title">Portal</div>
+        <div class="header-controls">
+            <select class="language-select" aria-label="Idioma">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+            </select>
+            <div class="menu-container">
+                <button class="menu-btn" id="menuBtn" aria-label="Menú de opciones" aria-expanded="false" title="Menú">☰</button>
+                <div class="dropdown-content" id="dropdownMenu">
+                    <ul>
+                        <li><a href="index.html">Inicio</a></li>
+                        <li><a href="regis_login.html">Crear cuenta</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="login-card">
+
+            <div class="logo-container">
+            <img src="images/login.png" alt="Ini-Sesion" class="login-img">
+            </div>
+
+            <h1 id="titulo">Iniciar sesión</h1>
+
+            <!-- Aquí se muestran los mensajes: cuenta pendiente o datos incorrectos -->
+           <!-- <div id="mensaje" class="aviso oculto" role="alert"></div>-->
+
+             <form style="width: 100%;" onsubmit="event.preventDefault();">
+                
+                    <label for="username">Email</label>
+                <div class="form-group">
+                    <input type="email" id="username" name="username" required placeholder="Ej: correo@gmail.com"  pattern="[^\s@]+@[^\s@]+\.[A-Za-z]{2,}">
+                </div>
+
+                    <label for="claveP">Contraseña</label>
+                <div class="campo-clave">    
+                    <input type="password" id="claveP" name="claveP" autocomplete="current-password" required placeholder="Minimo 8 caracteres">
+                    <button type="button" class="ver-clave" aria-label="Mostrar contraseña" aria-pressed="false">Mostrar</button>
+                </div>
+
+                <div class="links">
+                    <a href="#" id="claveOL?">¿Has olvidado tu contraseña?</a>
+                </div>
+                
+                <button type="submit" class="btn-submit">Iniciar sesión</button>
+            </form>
+
+            
+    </main>
+
+<script>
+    
+
+    // Pantalla de cada rol (cambia los nombres por tus páginas reales)
+    const PANTALLA_POR_ROL = {
+        graduado: 'graduado.html',
+        empresa: 'empresa.html',
+        coordinadora: 'coordinadora.html'
+    };
+
+    function mostrarMensaje(texto) {
+        const caja = document.getElementById('mensaje');
+        caja.textContent = texto;
+        caja.classList.remove('oculto');
+    }
+
+    document.getElementById('form-login').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // TODO: enviar correo y contraseña al servidor. El servidor debe responder
+        // con { estado, rol }, por ejemplo:
+        //   { estado: 'ok', rol: 'empresa' }
+        //   { estado: 'pendiente' }      -> la solicitud aún no fue aprobada
+        //   { estado: 'incorrecto' }     -> correo o contraseña no coinciden
+        // Mientras no exista el servidor, se muestra un mensaje de prueba.
+        const respuesta = { estado: 'incorrecto' };
+
+        if (respuesta.estado === 'ok') {
+            window.location.href = PANTALLA_POR_ROL[respuesta.rol];
+        } else if (respuesta.estado === 'pendiente') {
+            mostrarMensaje('Tu solicitud sigue pendiente de aprobación. Te avisaremos cuando esté lista.');
+        } else {
+            mostrarMensaje('El correo o la contraseña no coinciden. Revisa tus datos e inténtalo de nuevo.');
+        }
+    });
+</script>
+<script src="appJS/general.js"></script>
+<script src="appJS/logins.js"></script>
+</body>
+</html>
