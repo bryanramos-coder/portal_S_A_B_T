@@ -15,8 +15,8 @@
 
         /* Encabezado */
         header {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
             padding: 15px 30px;
             background-color: rgb(30, 41, 59);
@@ -26,12 +26,25 @@
         .portal-title {
             font-size: 18px;
             font-weight: 500;
+            justify-self: center;
         }
 
         .header-controls {
             display: flex;
-            align-items: center;
+            justify-self: end;
             gap: 15px;
+        }
+
+        .logos {
+            display: flex;
+            justify-self: start;
+            gap: 20px;
+            }
+
+        .logoTipo-img {
+            width:90px;
+            height: auto;
+            display: block;
         }
 
         .language-select {
@@ -136,6 +149,7 @@
             border-radius: 50%;
             object-fit: cover;
         }
+        
 
 
         .logo-container {
@@ -299,3 +313,7 @@
         .btn-submit:hover {
             background-color: #9e001d;
         }
+
+
+
+        
