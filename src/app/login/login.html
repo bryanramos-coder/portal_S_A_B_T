@@ -1,0 +1,58 @@
+<app-header
+  [enlaces]="[
+    { texto: 'Inicio', ruta: '/' },
+    { texto: 'Crear cuenta', ruta: '/registro' },
+  ]"
+/>
+
+<main>
+  <div class="login-card">
+    <div class="logo-container">
+      <img src="/images/login.png" alt="Iniciar sesión" class="login-img" />
+    </div>
+
+    <h1>Iniciar sesión</h1>
+
+    @if (mensaje()) {
+      <div class="aviso" role="alert">{{ mensaje() }}</div>
+    }
+
+    <form style="width: 100%" [formGroup]="form" (ngSubmit)="enviar()">
+      <label for="username">Email</label>
+      <div class="form-group">
+        <input
+          type="email"
+          id="username"
+          formControlName="correo"
+          placeholder="Ej: correo@gmail.com"
+        />
+      </div>
+
+      <label for="claveP">Contraseña</label>
+      <div class="campo-clave">
+        <input
+          [type]="verClave() ? 'text' : 'password'"
+          id="claveP"
+          formControlName="clave"
+          autocomplete="current-password"
+          placeholder="Mínimo 8 caracteres"
+        />
+        <button
+          type="button"
+          class="ver-clave"
+          [attr.aria-pressed]="verClave()"
+          [attr.aria-label]="verClave() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          (click)="verClave.set(!verClave())"
+        >
+          {{ verClave() ? 'Ocultar' : 'Mostrar' }}
+        </button>
+      </div>
+
+      <div class="links">
+        <a href="#">¿Has olvidado tu contraseña?</a>
+      </div>
+
+      <button type="submit" class="btn-submit">Iniciar sesión</button>
+    </form>
+  </div>
+</main>

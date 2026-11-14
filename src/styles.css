@@ -317,5 +317,4 @@
 
 
         
-/* Añadido en la migración a Angular */
 .ng-touched.ng-invalid:not(form):not(.campo-clave):not(.terminos) { border-color: #c0392b; }
