@@ -1,0 +1,9 @@
+<div class="panel">
+  <app-barra-lateral [opciones]="menu" />
+  <div class="panel-contenido">
+    <app-barra-superior [rol]="rol" />
+    <div class="panel-principal">
+      <router-outlet />
+    </div>
+  </div>
+</div>

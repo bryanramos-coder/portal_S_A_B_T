@@ -1,0 +1,46 @@
+.pagina { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+.titulo-pagina { font-size: 24px; font-weight: 600; }
+
+.rejilla { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
+.columna { display: flex; flex-direction: column; gap: 20px; }
+
+.tarjeta {
+  background-color: rgb(30, 41, 59); border: 1px solid #404c60;
+  border-radius: 8px; padding: 24px;
+}
+.tarjeta-cabecera { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.tarjeta-titulo { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+.tarjeta-cabecera .tarjeta-titulo { margin-bottom: 0; }
+
+.resumen { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.foto { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; }
+.nombre { font-size: 18px; font-weight: 600; }
+.etiqueta-rol {
+  background-color: #14653a; font-size: 11px; font-weight: 700;
+  padding: 2px 10px; border-radius: 10px; text-transform: uppercase;
+}
+.correo { font-size: 13px; opacity: 0.75; }
+.dato-extra { font-size: 12px; opacity: 0.55; margin-top: 8px; }
+
+.campos { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.campo.completo { grid-column: 1 / -1; }
+.campo input { margin-bottom: 0; }
+.campo input:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.botones { display: flex; gap: 10px; margin-top: 20px; }
+.boton {
+  padding: 9px 16px; border-radius: 6px; font-size: 14px; color: #fff; cursor: pointer;
+  background-color: rgb(30, 41, 59); border: 1px solid #404c60;
+}
+.boton:hover { border-color: #666; }
+.boton.principal { background-color: #7a0016; border-color: #7a0016; }
+.boton.principal:hover { background-color: #9e001d; }
+
+.mensaje { font-size: 13px; padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; }
+.mensaje.ok { background-color: rgba(20, 101, 58, 0.35); }
+.mensaje.error { background-color: rgba(192, 57, 43, 0.35); }
+
+@media (max-width: 900px) {
+  .rejilla { grid-template-columns: 1fr; }
+  .campos { grid-template-columns: 1fr; }
+}

@@ -21,16 +21,16 @@
           <label class="QueTipo">¿Qué tipo de cuenta quieres crear?</label>
         </div>
         <div class="tipo-opciones">
-          <button type="button" class="btn-submit" (click)="paso.set('graduado')">
-            Graduado o estudiante
+          <!-- Dentro de @case ('tipo') -->
+          <button type="button" class="btn-submit" (click)="paso.set('alumno')">
+           Graduado o estudiante
           </button>
           <button type="button" class="btn-submit" (click)="paso.set('empresa')">Empresa</button>
         </div>
       }
 
-      @case ('graduado') {
-        <form style="width: 100%" [formGroup]="graduado" (ngSubmit)="enviar('graduado')">
-          <label for="g-apellido">Apellidos</label>
+      @case ('alumno') {
+      <form style="width: 100%" [formGroup]="alumno" (ngSubmit)="enviar('alumno')">          <label for="g-apellido">Apellidos</label>
           <div class="form-group">
             <input
               type="text"
@@ -91,14 +91,16 @@
             </select>
           </div>
 
-          <label for="g-anio">Año de graduación o de egreso</label>
+          <label for="g-anio">{{ anioLabel() }}</label>
           <div class="form-group">
             <select id="g-anio" formControlName="anio">
-              <option value="">
-                {{ graduado.controls.anio.disabled ? 'No aplica (en curso)' : 'Seleccione su año' }}
-              </option>
-              @for (a of anios; track a) {
-                <option [value]="a">{{ a }}</option>
+              @if (alumno.controls.situacion.value === 'quinto') {
+                <option value="">No aplica (en curso)</option>
+              } @else {
+                <option value="">Seleccione su año</option>
+                @for (a of anios; track a) {
+                  <option [value]="a">{{ a }}</option>
+                }
               }
             </select>
           </div>

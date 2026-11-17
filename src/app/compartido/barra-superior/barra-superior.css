@@ -1,0 +1,34 @@
+.barra-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: rgb(30, 41, 59);
+  border-bottom: 1px solid #404c60;
+}
+.usuario { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    font-size: 14px; }
+
+.etiqueta-rol {
+  background-color: #14653a; 
+  font-size: 10px; 
+  font-weight: 700;
+  padding: 2px 8px; 
+  border-radius: 10px; 
+  text-transform: uppercase;
+}
+.avatar { 
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%; 
+    justify-self: end;
+ }
+
+.name_portal{
+    text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+}

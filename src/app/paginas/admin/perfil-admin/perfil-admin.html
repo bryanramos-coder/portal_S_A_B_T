@@ -1,0 +1,92 @@
+<div class="pagina">
+
+  <div class="titulo-pagina">Mi perfil</div>
+
+  <div class="rejilla">
+
+    <div class="tarjeta resumen">
+      <img class="foto" src="images/login.png" alt="Foto de perfil">
+      <span class="etiqueta-rol">Administrador</span>
+      <div class="correo">{{ datos.correo }}</div>
+      <div class="dato-extra">Miembro desde: enero de 2026</div>
+
+      <img class="foto" [src]="foto()" alt="Foto de perfil">
+
+    <input #archivo id="foto" type="file" accept="image/*" hidden (change)="elegirFoto($event)">
+    <button class="boton" (click)="archivo.click()">Cambiar foto</button>
+    @if (tieneFotoPropia) {
+    <button class="boton-texto" (click)="eliminarFoto()">Quitar foto</button>
+}
+    @if (errorFoto) {
+    <div class="mensaje error">{{ errorFoto }}</div>
+}
+    </div>
+
+    <div class="columna">
+
+      <div class="tarjeta">
+        <div class="tarjeta-cabecera">
+          <div class="tarjeta-titulo">Datos personales</div>
+          @if (!editando) {
+            <button class="boton" (click)="editar()">Editar</button>
+          }
+        </div>
+
+        @if (guardado) {
+          <div class="mensaje ok">Datos guardados.</div>
+        }
+
+        <div class="campos">
+          
+          <div class="campo completo">
+            <label for="correo">Correo</label>
+            <input id="correo" type="email" [(ngModel)]="copia.correo" [disabled]="!editando">
+          </div>
+         
+          <div class="campo completo">
+            <label for="cargo">Cargo</label>
+            <input id="cargo" [(ngModel)]="copia.cargo" disabled>
+          </div>
+        </div>
+
+        @if (editando) {
+          <div class="botones">
+            <button class="boton principal" (click)="guardar()">Guardar cambios</button>
+            <button class="boton" (click)="cancelar()">Cancelar</button>
+          </div>
+        }
+      </div>
+
+      <div class="tarjeta">
+        <div class="tarjeta-titulo">Cambiar contraseña</div>
+
+        <div class="campos">
+          <div class="campo completo">
+            <label for="actual">Contraseña actual</label>
+            <input id="actual" type="password" [(ngModel)]="clave.actual">
+          </div>
+          <div class="campo">
+            <label for="nueva">Nueva contraseña</label>
+            <input id="nueva" type="password" [(ngModel)]="clave.nueva" placeholder="Mínimo 8 caracteres">
+          </div>
+          <div class="campo">
+            <label for="confirmar">Confirmar contraseña</label>
+            <input id="confirmar" type="password" [(ngModel)]="clave.confirmar">
+          </div>
+        </div>
+
+        @if (mensajeClave) {
+          <div class="mensaje" [class.ok]="!claveConError" [class.error]="claveConError">
+            {{ mensajeClave }}
+          </div>
+        }
+
+        <div class="botones">
+          <button class="boton principal" (click)="cambiarClave()">Actualizar contraseña</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

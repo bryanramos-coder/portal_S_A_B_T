@@ -1,0 +1,13 @@
+<aside class="barra-lateral">
+  <img class="logo" src="images/logotipo_ues.png" alt="Logo">
+
+  <nav>
+    @for (opcion of opciones(); track opcion.ruta) {
+      <a [routerLink]="opcion.ruta" routerLinkActive="activo"
+         [routerLinkActiveOptions]="{ exact: true }">
+        <img class="icono" [src]="opcion.icono" alt="">
+        <span>{{ opcion.texto }}</span>
+      </a>
+    }
+  </nav>
+</aside>

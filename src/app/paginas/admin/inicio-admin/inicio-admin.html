@@ -1,0 +1,25 @@
+<div class="pagina">
+
+  <div class="encabezado">
+    <div>
+      <div class="saludo">Bienvenid@</div>
+      <div class="fecha">{{ hoy }}</div>
+    </div>
+  </div>
+
+  <div class="indicadores">
+    @for (item of indicadores; track item.titulo) {
+      <div class="tarjeta indicador" [style.border-top-color]="item.color">
+        <div class="indicador-titulo">{{ item.titulo }}</div>
+          <!--
+        <div class="indicador-valor">{{ item.valor }}</div>
+        <div class="indicador-detalle">{{ item.detalle }}</div> -->
+      </div>
+    }
+  </div>
+
+  <div class="acciones">
+      <a class="boton principal" routerLink="/admin/usuarios">Revisar solicitudes</a>
+      <a class="boton" routerLink="/admin/ofertas">Ver ofertas</a>
+    </div>
+</div>

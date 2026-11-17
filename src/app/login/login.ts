@@ -16,9 +16,9 @@ export class Login {
 
   // Pantalla de cada rol (cambia por tus rutas reales)
   private readonly pantallaPorRol = {
-    graduado: '/graduado',
+    alumno: '/alumno',
     empresa: '/empresa',
-    coordinadora: '/coordinadora',
+    admin: '/admin',
   };
 
   verClave = signal(false);
@@ -39,7 +39,7 @@ export class Login {
     const r = await this.auth.iniciarSesion(correo, clave);
 
     if (r.estado === 'ok') {
-      this.router.navigateByUrl(this.pantallaPorRol[r.rol]);
+      this.router.navigateByUrl(this.pantallaPorRol[r.rol as keyof typeof this.pantallaPorRol]);
     } else if (r.estado === 'pendiente') {
       this.mensaje.set('Tu solicitud sigue pendiente de aprobación. Te avisaremos cuando esté lista.');
     } else {

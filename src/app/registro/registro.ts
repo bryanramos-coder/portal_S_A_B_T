@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Header } from '../header/header';
 import { Auth } from '../services/auth';
 
-type Paso = 'tipo' | 'graduado' | 'empresa' | 'listo';
+type Paso = 'tipo' | 'alumno' | 'empresa' | 'listo';
 
 const CORREO = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
 const TELEFONO = /^\+?(?=(?:[^0-9]*[0-9]){8,15}$)[0-9][0-9\s\-]*[0-9]$/;
@@ -26,14 +26,14 @@ export class Registro {
 
   titulo: Record<Paso, string> = {
     tipo: 'Crear cuenta',
-    graduado: 'Registrar graduado o estudiante',
+    alumno: 'Registrar graduado o estudiante',
     empresa: 'Registrar empresa',
     listo: 'Solicitud enviada',
   };
 
   anios = Array.from({ length: new Date().getFullYear() - 1989 }, (_, i) => new Date().getFullYear() - i);
 
-  graduado = this.fb.nonNullable.group({
+  alumno = this.fb.nonNullable.group({
     apellido: ['', Validators.required],
     nombre: ['', Validators.required],
     correo: ['', [Validators.required, Validators.pattern(CORREO)]],
@@ -54,13 +54,19 @@ export class Registro {
     terminos: [false, Validators.requiredTrue],
   });
 
+ anioLabel = signal('Año de graduación o de egreso');
+
   constructor() {
-    // El año solo aplica a graduados y egresados
-    this.graduado.controls.situacion.valueChanges.subscribe(valor => {
-      const anio = this.graduado.controls.anio;
-      if (valor === 'graduado' || valor === 'egresado') {
+    this.alumno.controls.situacion.valueChanges.subscribe(valor => {
+      const anio = this.alumno.controls.anio;
+      if (valor === 'graduado') {
+        this.anioLabel.set('Año de graduación');
+        anio.enable();
+      } else if (valor === 'egresado') {
+        this.anioLabel.set('Año de egreso');
         anio.enable();
       } else {
+        this.anioLabel.set('Año estimado de graduación'); // Para quinto año
         anio.reset('');
         anio.disable();
       }
@@ -72,7 +78,7 @@ export class Registro {
     this.paso.set('tipo');
   }
 
-  async enviar(tipo: 'graduado' | 'empresa') {
+  async enviar(tipo: 'alumno' | 'empresa') {
     const form = this[tipo];
     if (form.invalid) {
       form.markAllAsTouched();

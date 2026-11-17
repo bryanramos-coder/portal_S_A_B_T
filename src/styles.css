@@ -329,9 +329,10 @@
             text-decoration: underline;
         }
 
-        app-root, app-login, app-registro, app-header {
+        app-root, app-login, app-registro, app-header,
+        app-plantilla-panel, app-barra-lateral, app-barra-superior {
             display: contents;
-        }
+}
 
         
 .ng-touched.ng-invalid:not(form):not(.campo-clave):not(.terminos) { border-color: #c0392b; }

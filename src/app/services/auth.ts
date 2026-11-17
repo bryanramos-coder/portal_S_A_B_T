@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 export type RespuestaLogin =
-  | { estado: 'ok'; rol: 'graduado' | 'empresa' | 'coordinadora' }
+  | { estado: 'ok'; rol: 'alumno' | 'empresa' | 'coordinadora' }
   | { estado: 'pendiente' }
   | { estado: 'incorrecto' };
 
@@ -13,7 +13,7 @@ export class Auth {
     return { estado: 'incorrecto' };
   }
 
-  async solicitarCuenta(tipo: 'graduado' | 'empresa', datos: unknown): Promise<void> {
+  async solicitarCuenta(tipo: 'alumno' | 'empresa', datos: unknown): Promise<void> {
     // TODO: POST al servidor con los datos del registro
   }
 }

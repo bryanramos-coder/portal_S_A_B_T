@@ -1,0 +1,193 @@
+<div class="pagina">
+
+  <div>
+    <div class="titulo-pagina">Seguimiento de graduados</div>
+    <div class="subtitulo">Situación laboral y trayectoria profesional, a partir del perfil de cada persona.</div>
+  </div>
+
+  <div class="condicion">
+    <span>Mostrar:</span>
+    <button class="pestana" [class.activa]="condicion() === 'Graduado'" (click)="cambiarCondicion('Graduado')">Graduados</button>
+    <button class="pestana" [class.activa]="condicion() === 'Egresado'" (click)="cambiarCondicion('Egresado')">Egresados</button>
+    <button class="pestana" [class.activa]="condicion() === ''" (click)="cambiarCondicion('')">Todos</button>
+  </div>
+
+  <div class="pestanas">
+    <button class="pestana" [class.activa]="vista() === 'global'" (click)="vista.set('global')">Global</button>
+    <button class="pestana" [class.activa]="vista() === 'persona'" (click)="vista.set('persona')">Por persona</button>
+  </div>
+
+  <ng-template #barras let-datos>
+    @for (d of datos; track d.etiqueta) {
+      <div class="fila-barra">
+        <span class="barra-etiqueta">{{ d.etiqueta }}</span>
+        <div class="barra-pista"><div class="barra-relleno" [style.width.%]="d.porcentaje"></div></div>
+        <span class="barra-valor">{{ d.valor }}</span>
+      </div>
+    } @empty {
+      <div class="sin-datos">Sin datos todavía.</div>
+    }
+  </ng-template>
+
+  @if (vista() === 'global') {
+
+    <div class="filtro">
+      <label for="anio">Año de graduación o egreso</label>
+      <select id="anio" [ngModel]="anio()" (ngModelChange)="anio.set($event)">
+        <option value="">Todos</option>
+        @for (a of anios(); track a) {
+          <option [value]="a">{{ a }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="indicadores">
+      <div class="tarjeta">
+        <div class="indicador-valor">{{ total() }}</div>
+        <div class="indicador-titulo">{{ etiqueta() }} registrados</div>
+      </div>
+      <div class="tarjeta">
+        <div class="indicador-valor">{{ total() ? conEmpleo() + ' (' + porcentajeEmpleo() + '%)' : '—' }}</div>
+        <div class="indicador-titulo">Con empleo actual</div>
+      </div>
+      <div class="tarjeta">
+        <div class="indicador-valor">{{ promedioPuesto() }}</div>
+        <div class="indicador-titulo">Tiempo promedio en el puesto</div>
+      </div>
+      <div class="tarjeta">
+        <div class="indicador-valor">{{ total() ? perfilesCompletos() + ' (' + porcentajePerfiles() + '%)' : '—' }}</div>
+        <div class="indicador-titulo">Perfiles completos</div>
+      </div>
+    </div>
+
+    <div class="graficas">
+
+      <div class="tarjeta">
+        <div class="tarjeta-titulo">¿Cuántos tienen empleo?</div>
+        <div class="dona-contenedor">
+          <div class="dona" [style.background]="gradiente()">
+            <div class="dona-centro">{{ porcentajeEmpleo() }} %</div>
+          </div>
+          <div class="leyenda">
+            <div>Con empleo: <strong>{{ conEmpleo() }}</strong></div>
+            <div>Sin empleo registrado: <strong>{{ sinEmpleo() }}</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <div class="tarjeta-titulo">{{ etiqueta() }} por área de especialización</div>
+        <ng-container [ngTemplateOutlet]="barras" [ngTemplateOutletContext]="{ $implicit: porArea() }" />
+      </div>
+
+      <div class="tarjeta">
+        <div class="tarjeta-titulo">Empleo por sector</div>
+        <ng-container [ngTemplateOutlet]="barras" [ngTemplateOutletContext]="{ $implicit: porSector() }" />
+      </div>
+
+      <div class="tarjeta">
+        <div class="tarjeta-titulo">Tecnologías más usadas</div>
+        <ng-container [ngTemplateOutlet]="barras" [ngTemplateOutletContext]="{ $implicit: tecnologias() }" />
+      </div>
+
+      <div class="tarjeta">
+        <div class="tarjeta-titulo">{{ etiqueta() }} por {{ textoAnio() }}</div>
+        <ng-container [ngTemplateOutlet]="barras" [ngTemplateOutletContext]="{ $implicit: porAnio() }" />
+      </div>
+
+      <div class="tarjeta">
+        <div class="tarjeta-titulo">Tiempo en el puesto actual</div>
+        <ng-container [ngTemplateOutlet]="barras" [ngTemplateOutletContext]="{ $implicit: tiempoPuesto() }" />
+      </div>
+
+    </div>
+
+  } @else {
+
+    @if (seleccionado(); as p) {
+
+      <div>
+        <button class="boton" (click)="volver()">Volver a la lista</button>
+      </div>
+
+      <div class="detalle">
+
+        <div class="tarjeta">
+          <div class="nombre-egresado">{{ p.nombre }}</div>
+          <div class="correo">{{ p.correo }}</div>
+          <div class="etiquetas">
+            <span class="chip">{{ p.condicion }}</span>
+            <span class="estado" [class.habilitado]="p.empleado" [class.pendiente]="!p.empleado">
+              {{ p.empleado ? 'Con empleo' : 'Sin empleo registrado' }}
+            </span>
+          </div>
+
+          <dl class="datos">
+            <div>
+              <dt>{{ p.condicion === 'Graduado' ? 'Año de graduación' : 'Año de egreso' }}</dt>
+              <dd>{{ p.anio }}</dd>
+            </div>
+            <div><dt>Área de especialización</dt><dd>{{ p.areaEspecializacion || '—' }}</dd></div>
+            <div><dt>Puesto actual</dt><dd>{{ p.empleado ? p.puestoActual : '—' }}</dd></div>
+            <div><dt>Empresa actual</dt><dd>{{ p.empleado ? p.empresaActual : '—' }}</dd></div>
+            <div><dt>Sector</dt><dd>{{ p.empleado ? p.sector : '—' }}</dd></div>
+            <div><dt>Tiempo en el puesto</dt><dd>{{ tiempoEnPuesto(p) }}</dd></div>
+            <div><dt>Perfil</dt><dd>{{ p.perfilCompleto ? 'Completo' : 'Incompleto' }}</dd></div>
+          </dl>
+
+          <div class="bloque-titulo">Tecnologías y habilidades</div>
+          <div class="chips">
+            @for (t of p.tecnologias; track t) {
+              <span class="chip">{{ t }}</span>
+            } @empty {
+              <span class="sin-datos">Sin tecnologías registradas.</span>
+            }
+          </div>
+        </div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">Historial laboral</div>
+          @for (x of p.historial; track $index) {
+            <div class="experiencia">
+              <span class="punto"></span>
+              <div>
+                <div class="exp-puesto">{{ x.puesto }}</div>
+                <div class="exp-empresa">{{ x.empresa }}</div>
+                <div class="exp-fechas">
+                  {{ x.desde | date:'MM/yyyy' }} — {{ x.hasta ? (x.hasta | date:'MM/yyyy') : 'Actual' }}
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="sin-datos">Sin experiencia laboral registrada.</div>
+          }
+        </div>
+
+      </div>
+
+    } @else {
+
+      <div class="tarjeta">
+        <div class="tarjeta-titulo">Buscar {{ condicion() === 'Graduado' ? 'graduado' : condicion() === 'Egresado' ? 'egresado' : 'persona' }}</div>
+        <input class="buscador" type="text" placeholder="Nombre o correo"
+               [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)">
+
+        <div class="lista">
+          @for (p of resultados(); track p.id) {
+            <button class="item-lista" (click)="elegir(p)">
+              <span class="item-nombre">{{ p.nombre }}</span>
+              <span class="item-detalle">{{ p.condicion }} · {{ p.anio }} · {{ p.areaEspecializacion || 'Sin área' }}</span>
+            </button>
+          } @empty {
+            <div class="sin-datos">
+              {{ perfiles().length ? 'No se encontraron resultados.' : 'No hay perfiles registrados.' }}
+            </div>
+          }
+        </div>
+      </div>
+
+    }
+
+  }
+
+</div>

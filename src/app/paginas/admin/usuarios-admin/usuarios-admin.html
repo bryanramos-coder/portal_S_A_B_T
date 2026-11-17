@@ -1,0 +1,248 @@
+<div class="pagina">
+
+  <div class="encabezado">
+    <div>
+      <div class="titulo-pagina">Usuarios</div>
+      <div class="subtitulo">
+        Administra las cuentas de egresados, empresas y administradores.
+      </div>
+    </div>
+  </div>
+
+  <div class="tarjeta">
+
+    <!-- FILTROS -->
+    <div class="filtros">
+
+      <div class="filtro buscar">
+        <label for="busqueda">Buscar</label>
+
+        <input
+          id="busqueda"
+          type="text"
+          placeholder="Nombre o correo"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+        />
+      </div>
+
+      <div class="filtro">
+        <label for="tipo">Tipo</label>
+
+        <select
+          id="tipo"
+          [ngModel]="filtroTipo()"
+          (ngModelChange)="filtroTipo.set($event)"
+        >
+          <option value="">Todos</option>
+          <option value="Alumno">Alumno</option>
+          <option value="Empresa">Empresa</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+      </div>
+
+      <div class="filtro">
+        <label for="estado">Estado</label>
+
+        <select
+          id="estado"
+          [ngModel]="filtroEstado()"
+          (ngModelChange)="filtroEstado.set($event)"
+        >
+          <option value="">Todos</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Habilitado">Habilitado</option>
+          <option value="Deshabilitado">Deshabilitado</option>
+          <option value="Rechazado">Rechazado</option>
+        </select>
+      </div>
+
+      <button
+        type="button"
+        class="boton"
+        (click)="limpiarFiltros()"
+      >
+        Limpiar
+      </button>
+
+    </div>
+
+
+    <!-- TABLA -->
+    <div class="tabla-contenedor">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Registro</th>
+            <th class="col-acciones">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          @for (u of filtrados(); track u.id) {
+
+            <tr>
+
+              <td class="nombre">
+                {{ u.nombre }}
+              </td>
+
+              <td class="correo">
+                {{ u.correo }}
+              </td>
+
+              <td>
+                <span class="etiqueta">
+                  {{ u.tipo }}
+                </span>
+              </td>
+
+              <td>
+
+                <span
+                  class="estado"
+                  [class.pendiente]="u.estado === 'Pendiente'"
+                  [class.habilitado]="u.estado === 'Habilitado'"
+                  [class.deshabilitado]="u.estado === 'Deshabilitado'"
+                  [class.rechazado]="u.estado === 'Rechazado'"
+                >
+                  {{ u.estado }}
+                </span>
+
+              </td>
+
+              <td class="fecha">
+                {{ u.fechaRegistro }}
+              </td>
+
+              <td class="col-acciones">
+
+                <!-- VER -->
+                <button
+                  type="button"
+                  class="boton-chico"
+                  (click)="ver(u)"
+                >
+                  Ver
+                </button>
+
+
+                <!-- PENDIENTE -->
+                @if (u.estado === 'Pendiente') {
+
+                  <button
+                    type="button"
+                    class="boton-chico aprobar"
+                    (click)="habilitar(u)"
+                  >
+                    Aceptar
+                  </button>
+
+                  <button
+                    type="button"
+                    class="boton-chico rechazar"
+                    (click)="rechazar(u)"
+                  >
+                    Rechazar
+                  </button>
+
+                }
+
+
+                <!-- HABILITADO -->
+                @if (u.estado === 'Habilitado') {
+
+                  <button
+                    type="button"
+                    class="boton-chico rechazar"
+                    (click)="deshabilitar(u)"
+                  >
+                    Deshabilitar
+                  </button>
+
+                }
+
+
+                <!-- DESHABILITADO / RECHAZADO -->
+                @if (
+                  u.estado === 'Deshabilitado' ||
+                  u.estado === 'Rechazado'
+                ) {
+
+                  <button
+                    type="button"
+                    class="boton-chico aprobar"
+                    (click)="habilitar(u)"
+                  >
+                    Habilitar
+                  </button>
+
+                }
+
+              </td>
+
+            </tr>
+
+          } @empty {
+
+            <tr>
+              <td
+                colspan="6"
+                class="vacio"
+              >
+                No hay usuarios para mostrar.
+              </td>
+            </tr>
+
+          }
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <!-- PIE -->
+    <div class="pie-tabla">
+
+      <span class="total">
+        Mostrando
+        {{ filtrados().length }}
+        de
+        {{ usuarios().length }}
+        usuarios
+      </span>
+
+      <div class="paginacion">
+
+        <button
+          type="button"
+          class="boton"
+          disabled
+        >
+          Anterior
+        </button>
+
+        <button
+          type="button"
+          class="boton"
+          disabled
+        >
+          Siguiente
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

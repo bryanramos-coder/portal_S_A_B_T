@@ -1,0 +1,13 @@
+.panel { 
+    display: grid; 
+    grid-template-columns: 120px 1fr; 
+    flex: 1;
+ }
+.panel-contenido { 
+    display: flex; 
+    flex-direction: column; 
+}
+.panel-principal { flex: 1; 
+    padding: 24px; 
+    background-color: rgb(15, 23, 42); 
+}
