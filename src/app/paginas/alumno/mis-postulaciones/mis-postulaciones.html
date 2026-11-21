@@ -1,0 +1,77 @@
+<div class="pagina">
+
+  <div>
+    <div class="titulo-pagina">Mis postulaciones</div>
+    <div class="subtitulo">Sigue el estado de las ofertas a las que aplicaste.</div>
+  </div>
+
+  <div class="tarjeta">
+
+    <div class="filtros">
+      <div class="filtro">
+        <label for="estado">Estado</label>
+        <select id="estado" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)">
+          <option value="">Todos</option>
+          @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+        </select>
+      </div>
+      <button class="boton" (click)="filtroEstado.set('')">Limpiar</button>
+    </div>
+
+    <div class="tabla-contenedor">
+      <table>
+        <thead>
+          <tr>
+            <th>Puesto</th>
+            <th>Empresa</th>
+            <th>Postulada</th>
+            <th>Estado</th>
+            <th>Resuelta</th>
+            <th class="col-acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of lista(); track p.id) {
+            <tr>
+              <td class="nombre">{{ p.puesto }}</td>
+              <td class="suave">{{ p.empresa }}</td>
+              <td class="suave">{{ p.fechaPostulacion | date:'dd/MM/yyyy' }}</td>
+              <td><span class="estado" [class]="clase(p.estado)">{{ p.estado }}</span></td>
+              <td class="suave">{{ p.fechaResolucion ? (p.fechaResolucion | date:'dd/MM/yyyy') : '—' }}</td>
+              <td class="col-acciones">
+                @if (puedeRetirar(p)) {
+                  @if (confirmando() === p.id) {
+                    <span class="confirmar">
+                      ¿Retirar?
+                      <button class="boton-chico" (click)="retirar(p)">Sí, retirar</button>
+                      <button class="boton-chico" (click)="confirmando.set(null)">No</button>
+                    </span>
+                  } @else {
+                    <button class="boton-chico" (click)="confirmando.set(p.id)">Retirar</button>
+                  }
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="vacio">
+                @if (total()) {
+                  No hay postulaciones con ese estado.
+                } @else {
+                  Aún no te has postulado a ninguna oferta. <a routerLink="/alumno/ofertas">Ver ofertas</a>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pie-tabla">
+      Mostrando {{ lista().length }} de {{ total() }} postulaciones. Puedes retirar una postulación
+      mientras esté Recibida o En revisión, y volver a aplicar desde la oferta.
+    </div>
+
+  </div>
+
+</div>

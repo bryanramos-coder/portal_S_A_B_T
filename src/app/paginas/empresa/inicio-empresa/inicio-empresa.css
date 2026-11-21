@@ -1,0 +1,17 @@
+.pagina { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+.titulo-pagina { font-size: 24px; font-weight: 600; }
+.subtitulo { font-size: 14px; opacity: 0.7; margin-top: 2px; }
+.fecha { font-size: 13px; opacity: 0.6; margin-top: 2px; }
+
+/* Zona que ocupa el espacio restante y centra la tarjeta en ancho y alto */
+.centro {
+  flex: 1; min-height: 55vh;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.tarjeta {
+  width: 100%; max-width: 550px; min-height: 225px; box-sizing: border-box;
+  background-color: rgb(30, 41, 59); border: 1px solid #404c60;
+  border-top: 3px solid #2f6fd6; border-radius: 8px; padding: 24px;
+}
+.tarjeta-titulo { font-size: 14px; opacity: 0.9; }

@@ -1,0 +1,147 @@
+<div class="pagina">
+
+  <div>
+    <div class="titulo-pagina">Postulantes</div>
+    <div class="subtitulo">Revisa a los alumnos que aplicaron a tus ofertas y actualiza su estado.</div>
+  </div>
+
+  <div class="tarjeta">
+
+    <div class="filtros">
+      <div class="filtro buscar">
+        <label for="busqueda">Buscar postulante</label>
+        <input id="busqueda" type="text" placeholder="Nombre o apellido"
+               [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)">
+      </div>
+
+      <div class="filtro">
+        <label for="oferta">Oferta</label>
+        <select id="oferta" [ngModel]="filtroOferta()" (ngModelChange)="filtroOferta.set($event)">
+          <option value="">Todas</option>
+          @for (o of ofertas(); track o.id) { <option [value]="o.id">{{ o.puesto }}</option> }
+        </select>
+      </div>
+
+      <div class="filtro">
+        <label for="estado">Estado</label>
+        <select id="estado" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)">
+          <option value="">Todos</option>
+          @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+        </select>
+      </div>
+
+      <button class="boton" (click)="limpiarFiltros()">Limpiar</button>
+    </div>
+
+    <div class="tabla-contenedor">
+      <table>
+        <thead>
+          <tr>
+            <th>Postulante</th>
+            <th>Oferta</th>
+            <th>Situación</th>
+            <th>Postulado</th>
+            <th>Estado</th>
+            <th class="col-acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of filtradas(); track p.id) {
+            <tr>
+              <td class="nombre">{{ p.apellidos }}, {{ p.nombres }}</td>
+              <td class="suave">{{ p.puesto }}</td>
+              <td><span class="etiqueta">{{ p.situacion }}</span></td>
+              <td class="suave">{{ p.fechaPostulacion | date:'dd/MM/yyyy' }}</td>
+              <td><span class="estado" [class]="clase(p.estado)">{{ p.estado }}</span></td>
+              <td class="col-acciones">
+                <button class="boton-chico" (click)="ver(p)">Ver</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="vacio">
+                {{ propias().length ? 'No hay postulantes que coincidan.' : 'Aún no hay postulantes en tus ofertas.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pie-tabla">Mostrando {{ filtradas().length }} de {{ propias().length }} postulantes.</div>
+
+  </div>
+
+  @if (seleccionada(); as p) {
+    <div class="fondo" (click)="cerrar()">
+      <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+        <div class="modal-cabecera">
+          <div>
+            <div class="modal-nombre">{{ p.nombres }} {{ p.apellidos }}</div>
+            <div class="modal-sub">Postulación a: {{ p.puesto }}</div>
+            <div class="modal-etiquetas">
+              <span class="etiqueta">{{ p.situacion }}</span>
+              <span class="estado" [class]="clase(p.estado)">{{ p.estado }}</span>
+            </div>
+          </div>
+          <button class="cerrar" aria-label="Cerrar" (click)="cerrar()">×</button>
+        </div>
+
+        <div class="seccion-titulo">Datos del postulante</div>
+        <dl class="datos">
+          <div><dt>Correo</dt><dd>{{ p.correo }}</dd></div>
+          <div><dt>Teléfono</dt><dd>{{ p.telefono }}</dd></div>
+          <div><dt>Situación</dt><dd>{{ p.situacion }}</dd></div>
+          <div><dt>Año de egreso o graduación</dt><dd>{{ p.anio || '—' }}</dd></div>
+          <div><dt>Área de especialización</dt><dd>{{ p.area || '—' }}</dd></div>
+          <div><dt>Fecha de postulación</dt><dd>{{ p.fechaPostulacion | date:'dd/MM/yyyy' }}</dd></div>
+        </dl>
+
+        <div class="seccion-titulo">Habilidades</div>
+        <div class="chips">
+          @for (h of p.habilidades; track h) { <span class="chip">{{ h }}</span> }
+          @empty { <span class="sin-datos">No indicó habilidades.</span> }
+        </div>
+
+        <div class="seccion-titulo">Experiencia laboral</div>
+        @for (x of p.experiencias; track $index) {
+          <div class="experiencia">
+            <div class="exp-titulo">{{ x.cargo }} · {{ x.empresa }}</div>
+            <div class="exp-sub">
+              {{ mes(x.desde) }} – {{ x.hasta ? mes(x.hasta) : 'Actual' }}
+              @if (x.sector) { · {{ x.sector }} }
+            </div>
+            <div class="texto">{{ x.responsabilidades }}</div>
+          </div>
+        } @empty {
+          <div class="sin-datos">No registró experiencia laboral.</div>
+        }
+
+        <div class="seccion-titulo">Resolución</div>
+        <div class="nota">
+          Vacantes disponibles en esta oferta: <strong>{{ disponibles(p) }}</strong> de {{ p.vacantes }}.
+          Al marcar a un postulante como Seleccionado se descuenta una vacante.
+        </div>
+        @if (p.estado === 'Retirada') {
+          <div class="nota">El alumno retiró su postulación.</div>
+        }
+        @if (error()) { <div class="error-texto">{{ error() }}</div> }
+
+        <div class="modal-pie">
+          <button class="boton" (click)="cerrar()">Cerrar</button>
+          @for (e of acciones(p.estado); track e) {
+            <button class="boton"
+                    [class.rojo]="e === 'Descartado'" [class.verde]="e === 'Seleccionado'"
+                    [disabled]="e === 'Seleccionado' && disponibles(p) <= 0"
+                    (click)="cambiar(p, e)">
+              {{ e === 'En revisión' ? 'Marcar En revisión' : e === 'Seleccionado' ? 'Seleccionar' : 'Descartar' }}
+            </button>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

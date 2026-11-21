@@ -31,30 +31,35 @@ export class Registro {
     listo: 'Solicitud enviada',
   };
 
-  anios = Array.from({ length: new Date().getFullYear() - 1989 }, (_, i) => new Date().getFullYear() - i);
+  // La base de datos acepta años entre 1960 y 2100
+  anios = Array.from({ length: new Date().getFullYear() - 1959 }, (_, i) => new Date().getFullYear() - i);
 
+  // alumno: usuario.correo, datos_registro (nombres, apellidos, telefono), alumno (carnet, situación, año)
   alumno = this.fb.nonNullable.group({
-    apellido: ['', Validators.required],
-    nombre: ['', Validators.required],
-    correo: ['', [Validators.required, Validators.pattern(CORREO)]],
-    telefono: ['', [Validators.required, Validators.pattern(TELEFONO)]],
+    apellido: ['', [Validators.required, Validators.maxLength(100)]],
+    nombre: ['', [Validators.required, Validators.maxLength(100)]],
+    correo: ['', [Validators.required, Validators.maxLength(150), Validators.pattern(CORREO)]],
+    telefono: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(TELEFONO)]],
     carnet: ['', [Validators.required, Validators.pattern(CARNET)]],
     situacion: ['', Validators.required],
     anio: [{ value: '', disabled: true }, Validators.required],
     clave: ['', [Validators.required, Validators.minLength(8)]],
   });
 
+  // empresa: usuario.correo, datos_registro (persona de contacto), empresa (nombre_empresa, sitio_web),
+  // solicitud_cuenta.declaracion_veracidad (terminos)
   empresa = this.fb.nonNullable.group({
-    empresa: ['', Validators.required],
-    correo: ['', [Validators.required, Validators.pattern(CORREO)]],
-    contacto: ['', Validators.required],
-    telefono: ['', [Validators.required, Validators.pattern(TELEFONO)]],
-    web: [''],
+    empresa: ['', [Validators.required, Validators.maxLength(150)]],
+    correo: ['', [Validators.required, Validators.maxLength(150), Validators.pattern(CORREO)]],
+    contactoNombres: ['', [Validators.required, Validators.maxLength(100)]],
+    contactoApellidos: ['', [Validators.required, Validators.maxLength(100)]],
+    telefono: ['', [Validators.required, Validators.maxLength(20), Validators.pattern(TELEFONO)]],
+    web: ['', Validators.maxLength(200)],
     clave: ['', [Validators.required, Validators.pattern(CLAVE_EMPRESA)]],
     terminos: [false, Validators.requiredTrue],
   });
 
- anioLabel = signal('Año de graduación o de egreso');
+  anioLabel = signal('Año de egreso o de graduación');
 
   constructor() {
     this.alumno.controls.situacion.valueChanges.subscribe(valor => {
@@ -66,10 +71,17 @@ export class Registro {
         this.anioLabel.set('Año de egreso');
         anio.enable();
       } else {
-        this.anioLabel.set('Año estimado de graduación'); // Para quinto año
+        // Quinto año: anio_egreso_graduacion debe ser nulo
+        this.anioLabel.set('Año de egreso o de graduación');
         anio.reset('');
         anio.disable();
       }
+    });
+
+    // El carnet se guarda en mayúsculas (CHECK de la base de datos)
+    this.alumno.controls.carnet.valueChanges.subscribe(v => {
+      const mayus = v.toUpperCase();
+      if (v !== mayus) this.alumno.controls.carnet.setValue(mayus, { emitEvent: false });
     });
   }
 
@@ -78,13 +90,17 @@ export class Registro {
     this.paso.set('tipo');
   }
 
-  async enviar(tipo: 'alumno' | 'empresa') {
+   async enviar(tipo: 'alumno' | 'empresa') {
     const form = this[tipo];
     if (form.invalid) {
       form.markAllAsTouched();
       return;
     }
-    await this.auth.solicitarCuenta(tipo, form.getRawValue());
+    if (tipo === 'alumno') {
+      await this.auth.solicitarCuenta('alumno', this.alumno.getRawValue());
+    } else {
+      await this.auth.solicitarCuenta('empresa', this.empresa.getRawValue());
+    }
     this.paso.set('listo');
   }
 }

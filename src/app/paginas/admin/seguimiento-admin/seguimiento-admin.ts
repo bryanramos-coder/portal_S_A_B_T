@@ -3,10 +3,11 @@ import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 export interface Experiencia {
-  puesto: string;
+  cargo: string;
   empresa: string;
-  desde: string;
-  hasta: string | null; // null = puesto actual
+  sector?: string;
+  desde: string;          // AAAA-MM
+  hasta: string | null;   // null = puesto actual
 }
 
 export type Condicion = 'Graduado' | 'Egresado';

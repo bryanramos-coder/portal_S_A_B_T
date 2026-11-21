@@ -3,8 +3,8 @@
   <div class="encabezado">
     <div>
       <div class="titulo-pagina">Usuarios</div>
-      <div class="subtitulo">
-        Administra las cuentas de egresados, empresas y administradores.
+        <div class="subtitulo">
+        Administra las cuentas de alumnos, empresas y administradores.
       </div>
     </div>
   </div>
@@ -49,11 +49,11 @@
           [ngModel]="filtroEstado()"
           (ngModelChange)="filtroEstado.set($event)"
         >
-          <option value="">Todos</option>
+           <option value="">Todos</option>
           <option value="Pendiente">Pendiente</option>
-          <option value="Habilitado">Habilitado</option>
-          <option value="Deshabilitado">Deshabilitado</option>
-          <option value="Rechazado">Rechazado</option>
+          <option value="Activa">Activa</option>
+          <option value="Suspendida">Suspendida</option>
+          <option value="Rechazada">Rechazada</option>
         </select>
       </div>
 
@@ -108,10 +108,10 @@
 
                 <span
                   class="estado"
-                  [class.pendiente]="u.estado === 'Pendiente'"
-                  [class.habilitado]="u.estado === 'Habilitado'"
-                  [class.deshabilitado]="u.estado === 'Deshabilitado'"
-                  [class.rechazado]="u.estado === 'Rechazado'"
+                   [class.pendiente]="u.estado === 'Pendiente'"
+                  [class.habilitado]="u.estado === 'Activa'"
+                  [class.deshabilitado]="u.estado === 'Suspendida'"
+                  [class.rechazado]="u.estado === 'Rechazada'"
                 >
                   {{ u.estado }}
                 </span>
@@ -134,56 +134,17 @@
                 </button>
 
 
-                <!-- PENDIENTE -->
-                @if (u.estado === 'Pendiente') {
-
-                  <button
-                    type="button"
-                    class="boton-chico aprobar"
-                    (click)="habilitar(u)"
-                  >
-                    Aceptar
-                  </button>
-
-                  <button
-                    type="button"
-                    class="boton-chico rechazar"
-                    (click)="rechazar(u)"
-                  >
-                    Rechazar
-                  </button>
-
+                                @if (u.estado === 'Pendiente') {
+                  <button type="button" class="boton-chico aprobar" (click)="activar(u)">Aceptar</button>
+                  <button type="button" class="boton-chico rechazar" (click)="rechazar(u)">Rechazar</button>
                 }
 
-
-                <!-- HABILITADO -->
-                @if (u.estado === 'Habilitado') {
-
-                  <button
-                    type="button"
-                    class="boton-chico rechazar"
-                    (click)="deshabilitar(u)"
-                  >
-                    Deshabilitar
-                  </button>
-
+                @if (u.estado === 'Activa') {
+                  <button type="button" class="boton-chico rechazar" (click)="suspender(u)">Suspender</button>
                 }
 
-
-                <!-- DESHABILITADO / RECHAZADO -->
-                @if (
-                  u.estado === 'Deshabilitado' ||
-                  u.estado === 'Rechazado'
-                ) {
-
-                  <button
-                    type="button"
-                    class="boton-chico aprobar"
-                    (click)="habilitar(u)"
-                  >
-                    Habilitar
-                  </button>
-
+                @if (u.estado === 'Suspendida') {
+                  <button type="button" class="boton-chico aprobar" (click)="activar(u)">Reactivar</button>
                 }
 
               </td>

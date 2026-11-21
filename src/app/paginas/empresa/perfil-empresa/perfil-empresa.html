@@ -1,0 +1,116 @@
+<div class="pagina">
+
+  <div>
+    <div class="titulo-pagina">Mi perfil</div>
+    <div class="subtitulo">Completa los datos de tu empresa para poder publicar ofertas.</div>
+  </div>
+
+  @if (completo()) {
+    <div class="aviso ok">Tu perfil está completo. Ya puedes publicar ofertas.</div>
+  } @else {
+    <div class="aviso">
+      <strong>Completa tu perfil para publicar ofertas.</strong>
+      Te falta: {{ faltantes().join(', ') }}.
+    </div>
+  }
+
+  <div class="tarjeta">
+
+    <div class="progreso-texto">
+      <span>Perfil completado</span>
+      <span>{{ completados }} de {{ total }} campos obligatorios</span>
+    </div>
+    <div class="progreso-pista"><div class="progreso-relleno" [style.width.%]="porcentaje"></div></div>
+
+    <div class="logo-bloque">
+      @if (logo()) {
+        <img class="logo-img" [src]="logo()" alt="Logo de la empresa">
+      } @else {
+        <div class="logo-vacio">{{ inicial }}</div>
+      }
+      <div class="logo-info">
+        <div class="logo-titulo">Logo de la empresa (opcional)</div>
+        <div class="logo-nota">PNG, JPG o WEBP, máximo 5 MB. Se guarda en cuanto lo eliges.</div>
+        <div class="logo-botones">
+          <input #archivo type="file" accept="image/png,image/jpeg,image/webp" hidden
+                 (change)="elegirLogo($event)">
+          <button class="boton" (click)="archivo.click()">{{ logo() ? 'Cambiar logo' : 'Subir logo' }}</button>
+          @if (logo()) {
+            <button class="boton-texto" (click)="quitarLogo()">Quitar logo</button>
+          }
+        </div>
+        @if (errorLogo()) { <div class="error-campo">{{ errorLogo() }}</div> }
+      </div>
+    </div>
+
+    <div class="campos">
+
+      <div class="seccion-titulo">Datos de la empresa</div>
+      <div class="nota-registro">El nombre y el sitio web se tomaron de tu registro. Puedes corregirlos.</div>
+
+      <div class="campo completo">
+        <label for="correo">Correo de la cuenta</label>
+        <input id="correo" [value]="correo" disabled>
+      </div>
+
+      <div class="campo">
+        <label for="nombre">Nombre de la empresa <span class="req">*</span></label>
+        <input id="nombre" [(ngModel)]="form.nombreEmpresa" maxlength="150">
+      </div>
+
+      <div class="campo">
+        <label for="nit">NIT <span class="req">*</span></label>
+        <input id="nit" [(ngModel)]="form.nit" maxlength="20" placeholder="0000-000000-000-0"
+               [class.invalido]="errores()['nit']">
+        @if (errores()['nit']) { <div class="error-campo">{{ errores()['nit'] }}</div> }
+      </div>
+
+      <div class="campo completo">
+        <label for="web">Sitio web (opcional)</label>
+        <input id="web" [(ngModel)]="form.sitioWeb" maxlength="200" placeholder="https://">
+      </div>
+
+      <div class="campo completo">
+        <label for="desc">Descripción <span class="req">*</span></label>
+        <textarea id="desc" class="area" rows="4" [(ngModel)]="form.descripcion"
+                  placeholder="A qué se dedica la empresa"></textarea>
+      </div>
+
+      <div class="seccion-titulo">Persona de contacto</div>
+      <div class="nota-registro">Los nombres, apellidos y el teléfono se tomaron de tu registro. Puedes corregirlos.</div>
+
+      <div class="campo">
+        <label for="cnombres">Nombres <span class="req">*</span></label>
+        <input id="cnombres" [(ngModel)]="form.contactoNombres" maxlength="100">
+      </div>
+
+      <div class="campo">
+        <label for="capellidos">Apellidos <span class="req">*</span></label>
+        <input id="capellidos" [(ngModel)]="form.contactoApellidos" maxlength="100">
+      </div>
+
+      <div class="campo">
+        <label for="cargo">Cargo (opcional)</label>
+        <input id="cargo" [(ngModel)]="form.cargoContacto" maxlength="100">
+      </div>
+
+      <div class="campo">
+        <label for="tel">Teléfono <span class="req">*</span></label>
+        <input id="tel" [(ngModel)]="form.telefono" maxlength="20" placeholder="+503 2222-3333"
+               [class.invalido]="errores()['telefono']">
+        @if (errores()['telefono']) { <div class="error-campo">{{ errores()['telefono'] }}</div> }
+      </div>
+
+    </div>
+
+    @if (mensaje()) {
+      <div class="mensaje" [class.ok]="completo()">{{ mensaje() }}</div>
+    }
+
+    <div class="botones">
+      <button class="boton rojo" (click)="guardar()">Guardar cambios</button>
+    </div>
+
+  </div>
+
+</div>

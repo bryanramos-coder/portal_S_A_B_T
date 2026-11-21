@@ -38,10 +38,14 @@ export class Login {
     const { correo, clave } = this.form.getRawValue();
     const r = await this.auth.iniciarSesion(correo, clave);
 
-    if (r.estado === 'ok') {
-      this.router.navigateByUrl(this.pantallaPorRol[r.rol as keyof typeof this.pantallaPorRol]);
+      if (r.estado === 'ok') {
+      this.router.navigateByUrl(this.pantallaPorRol[r.rol]);
     } else if (r.estado === 'pendiente') {
       this.mensaje.set('Tu solicitud sigue pendiente de aprobación. Te avisaremos cuando esté lista.');
+    } else if (r.estado === 'suspendida') {
+      this.mensaje.set('Tu cuenta está suspendida. Comunícate con la administración.');
+    } else if (r.estado === 'rechazada') {
+      this.mensaje.set('Tu solicitud de cuenta fue rechazada.');
     } else {
       this.mensaje.set('El correo o la contraseña no coinciden. Revisa tus datos e inténtalo de nuevo.');
     }

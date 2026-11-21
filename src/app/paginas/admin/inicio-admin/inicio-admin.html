@@ -1,11 +1,9 @@
 <div class="pagina">
 
-  <div class="encabezado">
-    <div>
-      <div class="saludo">Bienvenid@</div>
-      <div class="fecha">{{ hoy }}</div>
-    </div>
-  </div>
+ <div>
+  <div class="titulo-pagina">Bienvenid&#64; al portal</div>
+  <div class="fecha">{{ fecha }}</div>
+</div>
 
   <div class="indicadores">
     @for (item of indicadores; track item.titulo) {
@@ -16,6 +14,11 @@
         <div class="indicador-detalle">{{ item.detalle }}</div> -->
       </div>
     }
+        <div class="tarjeta indicador" style="border-top-color: #ef4444">
+      <div class="indicador-titulo">Postulaciones</div>
+      <div class="indicador-valor">{{ totalPostulaciones() }}</div>
+      <div class="indicador-detalle">{{ enCurso() }} en curso · {{ seleccionados() }} seleccionados</div>
+    </div>
   </div>
 
   <div class="acciones">

@@ -1,0 +1,49 @@
+<div class="pagina">
+
+    <div>
+    <div class="titulo-pagina">Hola, {{ registro().nombres }}</div>
+    <div class="subtitulo">Te damos la bienvenida al Portal de Seguimiento y Bolsa de Trabajo.</div>
+    <div class="fecha">{{ fecha }}</div>
+  </div>
+
+  <div class="tarjeta">
+    <div class="tarjeta-cabecera">
+      <div class="tarjeta-titulo">Estado de tu perfil</div>
+      <span class="chip">{{ tipo() }}</span>
+    </div>
+
+    <div class="progreso-texto">
+      <span>Perfil completado</span>
+      <span>{{ completados() }} de {{ total() }} campos completados</span>
+    </div>
+    <div class="progreso-pista"><div class="progreso-relleno" [style.width.%]="porcentaje()"></div></div>
+
+    @if (completo()) {
+      <p class="texto">Tu perfil está completo. Ya puedes ver las ofertas y aplicar a ellas.</p>
+      <div class="acciones">
+        <a class="boton rojo" routerLink="/alumno/ofertas">Ver ofertas</a>
+      </div>
+    } @else {
+      <p class="texto">
+        Para aplicar a las ofertas te falta: <strong>{{ faltantes().join(', ') }}</strong>.
+        Mientras tanto puedes consultarlas.
+      </p>
+      <div class="acciones">
+        <a class="boton rojo" routerLink="/alumno/perfil">Completar perfil</a>
+        <a class="boton" routerLink="/alumno/ofertas">Ver ofertas</a>
+      </div>
+    }
+  </div>
+
+  <div class="accesos">
+    <a class="acceso" routerLink="/alumno/perfil">
+      <div class="acceso-titulo">Mi perfil</div>
+      <div class="acceso-texto">Actualiza tu foto, tus habilidades y tu experiencia.</div>
+    </a>
+    <a class="acceso" routerLink="/alumno/ofertas">
+      <div class="acceso-titulo">Ofertas de trabajo</div>
+      <div class="acceso-texto">Busca y filtra las ofertas publicadas por las empresas.</div>
+    </a>
+  </div>
+
+</div>

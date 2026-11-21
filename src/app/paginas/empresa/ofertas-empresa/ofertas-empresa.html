@@ -1,1 +1,439 @@
-<p>ofertas-empresa works!</p>
+<div class="pagina">
+
+  <div class="encabezado">
+    <div>
+      <div class="titulo-pagina">Mis ofertas</div>
+      <div class="subtitulo">Crea, publica y administra las ofertas de tu empresa.</div>
+    </div>
+    <button class="boton rojo" [disabled]="!completo()" (click)="nueva()">Nueva oferta</button>
+  </div>
+
+  @if (!completo()) {
+    <div class="aviso">
+      <strong>No puedes publicar ofertas todavía.</strong>
+      Completa tu perfil: te falta {{ faltantes().join(', ') }}.
+      <a routerLink="/empresa/perfil">Ir a Mi perfil</a>
+    </div>
+  }
+
+  <div class="tarjeta">
+
+    <div class="filtros">
+      <div class="filtro buscar">
+        <label for="busqueda">Buscar</label>
+        <input id="busqueda" type="text" placeholder="Puesto o habilidad"
+               [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)">
+      </div>
+
+      <div class="filtro">
+        <label for="estado">Estado</label>
+        <select id="estado" [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)">
+          <option value="">Todos</option>
+          @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+        </select>
+      </div>
+
+      <button class="boton" (click)="limpiarFiltros()">Limpiar</button>
+    </div>
+
+    <div class="tabla-contenedor">
+      <table>
+        <thead>
+          <tr>
+            <th>Puesto</th>
+            <th>Contratación</th>
+            <th>Estado</th>
+            <th>Vacantes</th>
+            <th>Postulantes</th>
+            <th>Publicada</th>
+            <th>Expira</th>
+            <th class="col-acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (o of filtradas(); track o.id) {
+            <tr>
+              <td class="nombre">{{ o.puesto }}</td>
+              <td><span class="etiqueta">{{ o.tipo }}</span></td>
+              <td><span class="estado" [class]="clase(o.estado)">{{ o.estado }}</span></td>
+              <td class="suave">{{ cubiertas(o) }} / {{ o.vacantes }}</td>
+              <td class="suave">{{ postulantes(o) }}</td>
+              <td class="suave">{{ o.fechaPublicacion ? (o.fechaPublicacion | date:'dd/MM/yyyy') : '—' }}</td>
+              <td class="suave">{{ o.fechaExpiracion | date:'dd/MM/yyyy' }}</td>
+              <td class="col-acciones">
+                <button class="boton-chico" (click)="ver(o)">Ver</button>
+                @if (puedeEditar(o)) {
+                  <button class="boton-chico" [disabled]="!completo()" (click)="editar(o)">Editar</button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="vacio">
+                {{ ofertas().length ? 'No hay ofertas que coincidan.' : 'Aún no has creado ofertas.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pie-tabla">
+      <span class="total">Mostrando {{ filtradas().length }} de {{ ofertas().length }} ofertas</span>
+    </div>
+
+  </div>
+
+  @if (seleccionada(); as o) {
+    <div class="fondo" (click)="cerrar()">
+      <div class="modal ancho" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+        <div class="modal-cabecera">
+          <div>
+            <div class="modal-nombre">{{ o.puesto }}</div>
+            <div class="modal-etiquetas">
+              <span class="etiqueta">{{ o.departamento }}</span>
+              <span class="estado" [class]="clase(o.estado)">{{ o.estado }}</span>
+            </div>
+          </div>
+          <button class="cerrar" aria-label="Cerrar" (click)="cerrar()">×</button>
+        </div>
+
+        @if (o.estado === 'Borrador') {
+          <div class="nota estado-nota">
+            Esta oferta es un borrador y los alumnos todavía no la ven.
+            @if (!o.habilidades.length) { Edítala y agrega al menos una habilidad requerida para poder publicarla. }
+          </div>
+        }
+        @if (o.estado === 'Cubierta') {
+          <div class="nota estado-nota">Todas las vacantes están ocupadas, por eso ya no se muestra a los alumnos.</div>
+        }
+        @if (o.estado === 'Vencida') {
+          <div class="nota estado-nota">La fecha de expiración ya pasó, por eso ya no se muestra a los alumnos.</div>
+        }
+
+        <div class="seccion-titulo">Detalles de la oferta</div>
+        <dl class="datos">
+          <div><dt>Sector</dt><dd>{{ o.sector }}</dd></div>
+          <div><dt>Vacantes (cubiertas / total)</dt><dd>{{ cubiertas(o) }} / {{ o.vacantes }}</dd></div>
+          <div><dt>Tipo de contratación</dt><dd>{{ o.tipo }}</dd></div>
+          <div><dt>Nivel de experiencia</dt><dd>{{ o.nivelExperiencia }}</dd></div>
+          <div><dt>Vehículo</dt><dd>{{ o.vehiculo || '—' }}</dd></div>
+          <div><dt>Modalidad</dt><dd>{{ o.modalidad || '—' }}</dd></div>
+          <div><dt>Salario</dt><dd>{{ salario(o.salarioMin, o.salarioMax) }}</dd></div>
+          <div><dt>Postulantes</dt><dd>{{ postulantes(o) }}</dd></div>
+          <div class="completo"><dt>Habilidades requeridas</dt><dd>{{ o.habilidades.join(', ') || '—' }}</dd></div>
+          <div>
+            <dt>Fecha de publicación</dt>
+            <dd>{{ o.fechaPublicacion ? (o.fechaPublicacion | date:'dd/MM/yyyy') : '—' }}</dd>
+          </div>
+          <div><dt>Fecha de expiración</dt><dd>{{ o.fechaExpiracion | date:'dd/MM/yyyy' }}</dd></div>
+        </dl>
+
+        <div class="seccion-titulo">Descripción de la oferta</div>
+
+        <div class="bloque-titulo">Objetivo del puesto</div>
+        <p class="texto">{{ o.objetivo }}</p>
+
+        <div class="bloque-titulo">Funciones principales</div>
+        <ul class="lista">
+          @for (l of lineas(o.funciones); track $index) { <li>{{ l }}</li> }
+        </ul>
+
+        <div class="bloque-titulo">Requisitos</div>
+        <ul class="lista">
+          @for (l of lineas(o.requisitos); track $index) { <li>{{ l }}</li> }
+        </ul>
+
+        @if (o.competencias) {
+          <div class="bloque-titulo">Competencias</div>
+          <ul class="lista">
+            @for (l of lineas(o.competencias); track $index) { <li>{{ l }}</li> }
+          </ul>
+        }
+
+        @if (o.ubicacionDetalle) {
+          <div class="bloque-titulo">Ubicación</div>
+          <p class="texto">{{ o.ubicacionDetalle }}</p>
+        }
+
+        @if (o.horarios) {
+          <div class="bloque-titulo">Horarios</div>
+          <p class="texto">{{ o.horarios }}</p>
+        }
+
+        @if (o.ofrecemos) {
+          <div class="bloque-titulo">Ofrecemos</div>
+          <ul class="lista">
+            @for (l of lineas(o.ofrecemos); track $index) { <li>{{ l }}</li> }
+          </ul>
+        }
+
+        @if (o.contactoNombre || o.contactoCorreo || o.indicaciones) {
+          <div class="seccion-titulo">Contacto (opcional)</div>
+          <dl class="datos">
+            <div><dt>Persona de contacto</dt><dd>{{ o.contactoNombre || '—' }}</dd></div>
+            <div><dt>Correo de contacto</dt><dd>{{ o.contactoCorreo || '—' }}</dd></div>
+            @if (o.indicaciones) {
+              <div class="completo"><dt>Indicaciones</dt><dd>{{ o.indicaciones }}</dd></div>
+            }
+          </dl>
+        }
+
+        @if (confirmandoCierre()) {
+          <div class="aviso-retiro">La oferta dejará de mostrarse a los alumnos y no podrá publicarse de nuevo.</div>
+        }
+
+        <div class="modal-pie">
+          <button class="boton" (click)="cerrar()">Volver</button>
+
+          @if (confirmandoCierre()) {
+            <button class="boton" (click)="confirmandoCierre.set(false)">Cancelar</button>
+            <button class="boton rojo" (click)="cerrarOfertaDesdeDetalle()">Confirmar cierre</button>
+          } @else {
+            <a class="boton" routerLink="/empresa/postulantes">Ver postulantes ({{ postulantes(o) }})</a>
+            @if (puedeEditar(o)) {
+              <button class="boton" [disabled]="!completo()" (click)="editar(o)">Editar</button>
+            }
+            @if (o.estado === 'Borrador') {
+              <button class="boton verde" [disabled]="!puedePublicar(o)" (click)="publicarDesdeDetalle()">Publicar</button>
+            }
+            @if (puedeCerrar(o)) {
+              <button class="boton rojo" (click)="confirmandoCierre.set(true)">Cerrar oferta</button>
+            }
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+
+  @if (formAbierto()) {
+    <div class="fondo" (click)="cerrarFormulario()">
+      <div class="modal ancho" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+        <div class="modal-cabecera">
+          <div class="modal-nombre">{{ editandoId === null ? 'Nueva oferta' : 'Editar oferta' }}</div>
+          <button class="cerrar" aria-label="Cerrar" (click)="cerrarFormulario()">×</button>
+        </div>
+        <div class="nota-form">
+          Se publicará como <strong>{{ empresa().nombreEmpresa }}</strong>.
+          Los campos con <span class="req">*</span> son obligatorios. La oferta se guarda como borrador hasta que la publiques;
+          la fecha de publicación se registra al publicar.
+        </div>
+
+        <div class="campos">
+
+          <div class="seccion-titulo">Datos generales</div>
+
+          <div class="campo">
+            <label for="f-puesto">Puesto <span class="req">*</span></label>
+            <input id="f-puesto" [(ngModel)]="form.puesto" maxlength="150" placeholder="Nombre del puesto"
+                   [class.invalido]="errores()['puesto']">
+            @if (errores()['puesto']) { <div class="error-campo">{{ errores()['puesto'] }}</div> }
+          </div>
+
+          <div class="campo">
+            <label for="f-sector">Sector <span class="req">*</span></label>
+            <select id="f-sector" [(ngModel)]="form.sector" [class.invalido]="errores()['sector']">
+              <option value="">Selecciona</option>
+              @for (s of sectores; track s) { <option [value]="s">{{ s }}</option> }
+            </select>
+            @if (errores()['sector']) { <div class="error-campo">{{ errores()['sector'] }}</div> }
+          </div>
+
+          <div class="campo">
+            <label for="f-vacantes">Puestos vacantes <span class="req">*</span></label>
+            <input id="f-vacantes" type="number" min="1" max="32767" [(ngModel)]="form.vacantes"
+                   [class.invalido]="errores()['vacantes']">
+            @if (errores()['vacantes']) { <div class="error-campo">{{ errores()['vacantes'] }}</div> }
+          </div>
+
+          <div class="seccion-titulo">Ubicación y contratación</div>
+
+          <div class="campo">
+            <label for="f-depto">Departamento <span class="req">*</span></label>
+            <select id="f-depto" [(ngModel)]="form.departamento" [class.invalido]="errores()['departamento']">
+              <option value="">Selecciona</option>
+              @for (d of departamentos; track d) { <option [value]="d">{{ d }}</option> }
+            </select>
+            @if (errores()['departamento']) { <div class="error-campo">{{ errores()['departamento'] }}</div> }
+          </div>
+
+          <div class="campo">
+            <label for="f-ubicacion">Detalle de la ubicación (opcional)</label>
+            <input id="f-ubicacion" [(ngModel)]="form.ubicacionDetalle" maxlength="200"
+                   placeholder="Zona de cobertura, municipio o dirección">
+          </div>
+
+          <div class="campo">
+            <label for="f-tipo">Tipo de contratación <span class="req">*</span></label>
+            <select id="f-tipo" [(ngModel)]="form.tipo" [class.invalido]="errores()['tipo']">
+              <option value="">Selecciona</option>
+              @for (t of tipos; track t) { <option [value]="t">{{ t }}</option> }
+            </select>
+            @if (errores()['tipo']) { <div class="error-campo">{{ errores()['tipo'] }}</div> }
+          </div>
+
+          <div class="campo">
+            <label for="f-nivel">Nivel de experiencia <span class="req">*</span></label>
+            <select id="f-nivel" [(ngModel)]="form.nivelExperiencia" [class.invalido]="errores()['nivelExperiencia']">
+              <option value="">Selecciona</option>
+              @for (n of niveles; track n) { <option [value]="n">{{ n }}</option> }
+            </select>
+            @if (errores()['nivelExperiencia']) { <div class="error-campo">{{ errores()['nivelExperiencia'] }}</div> }
+          </div>
+
+          <div class="campo">
+            <label for="f-modalidad">Modalidad (opcional)</label>
+            <select id="f-modalidad" [(ngModel)]="form.modalidad">
+              <option value="">Sin indicar</option>
+              @for (m of modalidades; track m) { <option [value]="m">{{ m }}</option> }
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="f-vehiculo">Vehículo (opcional)</label>
+            <select id="f-vehiculo" [(ngModel)]="form.vehiculo">
+              <option value="">Sin indicar</option>
+              @for (v of vehiculos; track v) { <option [value]="v">{{ v }}</option> }
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="f-smin">Salario mínimo (opcional)</label>
+            <input id="f-smin" type="number" min="0" step="0.01" [(ngModel)]="form.salarioMin"
+                   placeholder="Ej: 600" [class.invalido]="errores()['salarioMin']">
+            @if (errores()['salarioMin']) { <div class="error-campo">{{ errores()['salarioMin'] }}</div> }
+          </div>
+
+          <div class="campo">
+            <label for="f-smax">Salario máximo (opcional)</label>
+            <input id="f-smax" type="number" min="0" step="0.01" [(ngModel)]="form.salarioMax"
+                   placeholder="Ej: 800" [class.invalido]="errores()['salarioMax']">
+            @if (errores()['salarioMax']) { <div class="error-campo">{{ errores()['salarioMax'] }}</div> }
+          </div>
+
+          <div class="campo">
+            <label for="f-expira">Fecha de expiración <span class="req">*</span></label>
+            <input id="f-expira" type="date" [min]="hoy" [(ngModel)]="form.fechaExpiracion"
+                   [class.invalido]="errores()['fechaExpiracion']">
+            @if (errores()['fechaExpiracion']) { <div class="error-campo">{{ errores()['fechaExpiracion'] }}</div> }
+          </div>
+
+          <div class="seccion-titulo">Descripción de la oferta</div>
+
+          <div class="campo completo">
+            <label for="f-objetivo">Objetivo del puesto <span class="req">*</span></label>
+            <textarea id="f-objetivo" class="area" rows="3" [(ngModel)]="form.objetivo"
+                      placeholder="Para qué existe este puesto"
+                      [class.invalido]="errores()['objetivo']"></textarea>
+            @if (errores()['objetivo']) { <div class="error-campo">{{ errores()['objetivo'] }}</div> }
+          </div>
+
+          <div class="campo completo">
+            <label for="f-funciones">Funciones principales <span class="req">*</span></label>
+            <textarea id="f-funciones" class="area" rows="5" [(ngModel)]="form.funciones"
+                      placeholder="Una función por línea"
+                      [class.invalido]="errores()['funciones']"></textarea>
+            @if (errores()['funciones']) { <div class="error-campo">{{ errores()['funciones'] }}</div> }
+          </div>
+
+          <div class="campo completo">
+            <label for="f-requisitos">Requisitos <span class="req">*</span></label>
+            <textarea id="f-requisitos" class="area" rows="5" [(ngModel)]="form.requisitos"
+                      placeholder="Un requisito por línea"
+                      [class.invalido]="errores()['requisitos']"></textarea>
+            @if (errores()['requisitos']) { <div class="error-campo">{{ errores()['requisitos'] }}</div> }
+          </div>
+
+          <div class="campo completo">
+            <label for="f-competencias">Competencias (opcional)</label>
+            <textarea id="f-competencias" class="area" rows="3" [(ngModel)]="form.competencias"
+                      placeholder="Una competencia por línea"></textarea>
+          </div>
+
+          <div class="campo completo">
+            <label for="f-horarios">Horarios (opcional)</label>
+            <input id="f-horarios" [(ngModel)]="form.horarios"
+                   placeholder="Ej: lunes a viernes de 8:00 a 17:00">
+          </div>
+
+          <div class="campo completo">
+            <label for="f-ofrecemos">Ofrecemos (opcional)</label>
+            <textarea id="f-ofrecemos" class="area" rows="3" [(ngModel)]="form.ofrecemos"
+                      placeholder="Una prestación o beneficio por línea"></textarea>
+          </div>
+
+          <div class="seccion-titulo">Habilidades requeridas</div>
+
+          <div class="campo completo">
+            <label for="f-hab">Escribe una habilidad y pulsa Agregar. Se necesita al menos una para publicar.</label>
+            <div class="agregar">
+              <input id="f-hab" [(ngModel)]="nuevaHabilidad" maxlength="100"
+                     placeholder="Ej: Angular, SQL, Redes" (keydown.enter)="agregarHabilidad()"
+                     [class.invalido]="errores()['habilidades']">
+              <button type="button" class="boton" (click)="agregarHabilidad()">Agregar</button>
+            </div>
+            <div class="chips">
+              @for (h of form.habilidades; track h; let i = $index) {
+                <span class="chip">{{ h }}
+                  <button type="button" class="chip-x" aria-label="Quitar" (click)="quitarHabilidad(i)">×</button>
+                </span>
+              } @empty {
+                <span class="sin-datos">Aún no has agregado habilidades.</span>
+              }
+            </div>
+            @if (errores()['habilidades']) { <div class="error-campo">{{ errores()['habilidades'] }}</div> }
+          </div>
+
+          <div class="seccion-titulo">Contacto (opcional)</div>
+
+          <div class="campo completo">
+            <div class="nota-form">Si lo llenas, los alumnos verán estos datos en la oferta. Los alumnos aplican desde el portal.</div>
+            <label class="chk-perfil">
+              <input type="checkbox" [checked]="usarPerfil"
+                     (change)="cambiarUsarPerfil($any($event.target).checked)">
+              <span>Usar los datos de contacto de mi perfil</span>
+            </label>
+          </div>
+
+          <div class="campo">
+            <label for="f-cnombre">Persona de contacto</label>
+            <input id="f-cnombre" [(ngModel)]="form.contactoNombre" [disabled]="usarPerfil" maxlength="150">
+          </div>
+
+          <div class="campo">
+            <label for="f-ccorreo">Correo de contacto</label>
+            <input id="f-ccorreo" type="email" [(ngModel)]="form.contactoCorreo" [disabled]="usarPerfil"
+                   maxlength="150" [class.invalido]="errores()['contactoCorreo']">
+            @if (errores()['contactoCorreo']) { <div class="error-campo">{{ errores()['contactoCorreo'] }}</div> }
+          </div>
+
+          <div class="campo completo">
+            <label for="f-indic">Indicaciones (opcional)</label>
+            <textarea id="f-indic" class="area" rows="3" [(ngModel)]="form.indicaciones"
+                      placeholder="Ej: Menciona el puesto al escribir a la empresa"></textarea>
+          </div>
+
+        </div>
+
+        @if (hayErrores()) {
+          <div class="error-texto">Revisa los campos marcados antes de guardar.</div>
+        }
+
+        <div class="modal-pie">
+          <button class="boton" (click)="cerrarFormulario()">Cancelar</button>
+          @if (editandoEstado === 'Publicada') {
+            <button class="boton rojo" (click)="guardar(false)">Guardar cambios</button>
+          } @else {
+            <button class="boton" (click)="guardar(false)">Guardar borrador</button>
+            <button class="boton rojo" (click)="guardar(true)">Publicar</button>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

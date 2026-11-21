@@ -1,9 +1,16 @@
 import { Component } from '@angular/core';
+import { datosEmpresa } from '../perfil-empresa/perfil-empresa';
 
 @Component({
-  imports: [],
   selector: 'app-inicio-empresa',
-  styleUrl: './inicio-empresa.css',
+  imports: [],
   templateUrl: './inicio-empresa.html',
+  styleUrl: './inicio-empresa.css'
 })
-export class InicioEmpresa {}
+export class InicioEmpresa {
+  empresa = datosEmpresa;
+
+  fecha = new Date().toLocaleDateString('es-SV', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
+}

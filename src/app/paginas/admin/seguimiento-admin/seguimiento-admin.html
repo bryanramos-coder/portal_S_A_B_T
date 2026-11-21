@@ -151,8 +151,7 @@
             <div class="experiencia">
               <span class="punto"></span>
               <div>
-                <div class="exp-puesto">{{ x.puesto }}</div>
-                <div class="exp-empresa">{{ x.empresa }}</div>
+                <div class="exp-puesto">{{ x.cargo }}</div>                <div class="exp-empresa">{{ x.empresa }}</div>
                 <div class="exp-fechas">
                   {{ x.desde | date:'MM/yyyy' }} — {{ x.hasta ? (x.hasta | date:'MM/yyyy') : 'Actual' }}
                 </div>

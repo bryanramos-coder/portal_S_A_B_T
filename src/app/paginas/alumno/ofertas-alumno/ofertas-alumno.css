@@ -1,0 +1,150 @@
+.pagina { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+.titulo-pagina { font-size: 24px; font-weight: 600; }
+.subtitulo { font-size: 14px; opacity: 0.7; margin-top: 2px; }
+
+.aviso {
+  font-size: 14px; padding: 12px 16px; border-radius: 6px;
+  background-color: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5);
+}
+.aviso a, .nota a { color: inherit; text-decoration: underline; margin-left: 6px; }
+
+.tarjeta {
+  background-color: rgb(30, 41, 59); border: 1px solid #404c60;
+  border-radius: 8px; padding: 24px;
+}
+
+/* ---------- Botones ---------- */
+.boton {
+  display: inline-block; padding: 10px 16px; border-radius: 6px; font-size: 14px; color: #fff;
+  cursor: pointer; text-decoration: none; text-align: center;
+  background-color: rgb(30, 41, 59); border: 1px solid #404c60;
+}
+.boton:hover { border-color: #666; }
+.boton:disabled { opacity: 0.5; cursor: not-allowed; }
+.boton.activo { border-color: #7a0016; background-color: rgba(122, 0, 22, 0.35); }
+.boton.rojo { background-color: #7a0016; border-color: #7a0016; }
+.boton.rojo:hover { background-color: #9e001d; border-color: #9e001d; }
+.boton-texto {
+  background: none; border: none; color: #e0e0e0; font-size: 13px;
+  text-decoration: underline; cursor: pointer; align-self: flex-start; padding: 0;
+}
+
+input, select {
+  padding: 10px 12px; background-color: rgb(11, 19, 36); border: 1px solid #404c60;
+  color: #fff; border-radius: 4px; font-size: 14px;
+}
+select { cursor: pointer; }
+input:focus, select:focus { outline: none; border-color: #8B0000; }
+
+/* ---------- Lista ---------- */
+.contenido { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; }
+
+.panel-filtros {
+  display: flex; flex-direction: column; gap: 20px; padding: 20px;
+  background-color: rgb(30, 41, 59); border: 1px solid #404c60; border-radius: 8px;
+}
+.filtro-grupo { display: flex; flex-direction: column; gap: 8px; }
+.filtro-titulo {
+  font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.6;
+}
+.agregar { display: flex; flex-direction: column; gap: 8px; }
+.agregar input { width: 100%; box-sizing: border-box; }
+
+.area-item {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%;
+  padding: 8px 10px; border-radius: 6px; font-size: 13px; color: #fff; text-align: left;
+  background: none; border: 1px solid transparent; cursor: pointer;
+}
+.area-item:hover { background-color: rgba(255, 255, 255, 0.05); }
+.area-item.activa { background-color: rgba(122, 0, 22, 0.35); border-color: #7a0016; }
+.conteo { font-size: 12px; opacity: 0.7; }
+
+.check { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+.check input { padding: 0; width: 16px; height: 16px; accent-color: #7a0016; cursor: pointer; }
+
+.resultados { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.barra-resultados { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.total { font-size: 14px; opacity: 0.8; }
+.barra-derecha { display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 13px; }
+.barra-derecha label { opacity: 0.7; }
+
+.oferta {
+  display: flex; gap: 16px; align-items: flex-start; padding: 18px;
+  background-color: rgb(30, 41, 59); border: 1px solid #404c60; border-radius: 8px;
+}
+.oferta:hover { border-color: #666; }
+
+.oferta-logo {
+  width: 56px; height: 56px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background-color: rgba(122, 0, 22, 0.35); border: 1px solid #404c60;
+  font-size: 22px; font-weight: 600;
+}
+.oferta-logo.grande { width: 72px; height: 72px; font-size: 28px; }
+.oferta-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+.oferta-cuerpo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.oferta-puesto { font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.oferta-empresa { font-size: 14px; opacity: 0.8; }
+.oferta-etiquetas { display: flex; flex-wrap: wrap; gap: 6px; }
+.etiqueta {
+  font-size: 12px; padding: 3px 10px; border-radius: 12px;
+  background-color: rgb(11, 19, 36); border: 1px solid #404c60;
+}
+.oferta-tec { font-size: 13px; opacity: 0.75; }
+.oferta-fechas { font-size: 12px; opacity: 0.6; }
+.nueva {
+  font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px;
+  background-color: rgba(20, 101, 58, 0.5); color: #bbf7d0;
+}
+
+.oferta-acciones { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.estrella {
+  background: none; border: none; color: #fff; font-size: 22px; line-height: 1;
+  cursor: pointer; opacity: 0.6; padding: 4px;
+}
+.estrella:hover { opacity: 1; }
+.estrella.activa { color: #fbbf24; opacity: 1; }
+
+.vacio {
+  padding: 32px; text-align: center; font-size: 14px; opacity: 0.7;
+  background-color: rgb(30, 41, 59); border: 1px dashed #404c60; border-radius: 8px;
+}
+
+.paginacion { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+
+/* ---------- Detalle ---------- */
+.volver { margin-bottom: -8px; }
+
+.detalle-cabecera { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.detalle-titulo { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px; }
+.detalle-puesto { font-size: 22px; font-weight: 600; }
+
+.seccion-titulo {
+  font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+  opacity: 0.6; margin-top: 24px; padding-top: 16px; border-top: 1px solid #404c60; margin-bottom: 12px;
+}
+.bloque-titulo { font-size: 14px; font-weight: 600; margin: 16px 0 6px; }
+.texto { font-size: 14px; line-height: 1.6; opacity: 0.9; margin: 0; }
+.lista { font-size: 14px; line-height: 1.6; opacity: 0.9; margin: 0; padding-left: 20px; }
+
+.datos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin: 0; }
+.datos .completo { grid-column: 1 / -1; }
+.datos dt { font-size: 12px; opacity: 0.6; margin-bottom: 2px; }
+.datos dd { margin: 0; font-size: 14px; }
+
+.nota {
+  font-size: 13px; padding: 10px 12px; border-radius: 6px; margin-top: 14px;
+  background-color: rgba(245, 158, 11, 0.2);
+}
+.acciones-aplicar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+
+@media (max-width: 900px) {
+  .contenido { grid-template-columns: 1fr; }
+  .barra-derecha { margin-left: 0; }
+}
+@media (max-width: 700px) {
+  .datos { grid-template-columns: 1fr; }
+  .oferta { flex-wrap: wrap; }
+  .oferta-acciones { flex-direction: row; width: 100%; justify-content: space-between; align-items: center; }
+}

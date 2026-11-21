@@ -1,0 +1,301 @@
+<div class="pagina">
+
+  @if (!seleccionada()) {
+
+    <!-- ================= LISTA ================= -->
+    <div>
+      <div class="titulo-pagina">Ofertas de trabajo</div>
+      <div class="subtitulo">Consulta las ofertas publicadas por las empresas y aplica a las que te interesen.</div>
+    </div>
+
+    @if (!completo()) {
+      <div class="aviso">
+        <strong>No puedes aplicar todavía.</strong>
+        Puedes ver las ofertas, pero para aplicar completa tu perfil: te falta {{ faltantes().join(', ') }}.
+        <a routerLink="/alumno/perfil">Ir a Mi perfil</a>
+      </div>
+    }
+
+    <div class="contenido">
+
+      <!-- Filtros -->
+      <aside class="panel-filtros">
+
+        <div class="filtro-grupo">
+          <label for="buscar" class="filtro-titulo">Buscar</label>
+          <div class="agregar">
+            <input id="buscar" type="text" placeholder="Puesto, empresa o habilidad"
+                   [(ngModel)]="textoBusqueda" (keydown.enter)="buscar()">
+            <button class="boton" (click)="buscar()">Buscar</button>
+          </div>
+        </div>
+
+        <div class="filtro-grupo">
+          <div class="filtro-titulo">Sector</div>
+          <button class="area-item" [class.activa]="!sector()" (click)="elegirSector('')">
+            <span>Todos</span><span class="conteo">{{ vigentes().length }}</span>
+          </button>
+          @for (a of conteoSectores(); track a.nombre) {
+            <button class="area-item" [class.activa]="sector() === a.nombre" (click)="elegirSector(a.nombre)">
+              <span>{{ a.nombre }}</span><span class="conteo">{{ a.total }}</span>
+            </button>
+          }
+        </div>
+
+        <div class="filtro-grupo">
+          <div class="filtro-titulo">Tipo de contratación</div>
+          @for (t of tipos; track t) {
+            <label class="check">
+              <input type="checkbox" [checked]="tiposSel().includes(t)" (change)="alternar(tiposSel, t)">
+              <span>{{ t }}</span>
+            </label>
+          }
+        </div>
+
+        <div class="filtro-grupo">
+          <div class="filtro-titulo">Nivel de experiencia</div>
+          @for (n of niveles; track n) {
+            <label class="check">
+              <input type="checkbox" [checked]="nivelesSel().includes(n)" (change)="alternar(nivelesSel, n)">
+              <span>{{ n }}</span>
+            </label>
+          }
+        </div>
+
+        <div class="filtro-grupo">
+          <div class="filtro-titulo">Modalidad</div>
+          @for (m of modalidades; track m) {
+            <label class="check">
+              <input type="checkbox" [checked]="modalidadesSel().includes(m)" (change)="alternar(modalidadesSel, m)">
+              <span>{{ m }}</span>
+            </label>
+          }
+        </div>
+
+        @if (hayFiltros()) {
+          <button class="boton" (click)="limpiar()">Limpiar filtros</button>
+        }
+      </aside>
+
+      <!-- Resultados -->
+      <section class="resultados">
+
+        <div class="barra-resultados">
+          <span class="total">{{ filtradas().length }} ofertas</span>
+
+          <div class="barra-derecha">
+            <label for="orden">Ordenar</label>
+            <select id="orden" [ngModel]="orden()" (ngModelChange)="cambiarOrden($event)">
+              <option value="recientes">Más recientes</option>
+              <option value="expiran">Próximas a expirar</option>
+              <option value="puesto">Puesto (A-Z)</option>
+            </select>
+
+            <label for="porpag">Mostrar</label>
+            <select id="porpag" [ngModel]="porPagina()" (ngModelChange)="cambiarPorPagina($event)">
+              @for (n of opcionesPagina; track n) { <option [value]="n">{{ n }}</option> }
+            </select>
+          </div>
+        </div>
+
+        @for (o of visibles(); track o.id) {
+          <article class="oferta">
+            <div class="oferta-logo">
+              @if (o.logo) { <img [src]="o.logo" alt="Logo de {{ o.empresa }}"> }
+              @else { <span>{{ inicial(o) }}</span> }
+            </div>
+
+            <div class="oferta-cuerpo">
+              <div class="oferta-puesto">
+                {{ o.puesto }}
+                @if (esNueva(o)) { <span class="nueva">Nueva</span> }
+              </div>
+              <div class="oferta-empresa">{{ o.empresa }}</div>
+              <div class="oferta-etiquetas">
+                <span class="etiqueta">{{ o.departamento }}</span>
+                <span class="etiqueta">{{ o.tipo }}</span>
+                @if (o.modalidad) { <span class="etiqueta">{{ o.modalidad }}</span> }
+                <span class="etiqueta">{{ o.nivelExperiencia }}</span>
+                <span class="etiqueta">{{ disponibles(o) }} {{ disponibles(o) === 1 ? 'vacante' : 'vacantes' }}</span>
+                @if (estadoPostulacion(o); as ep) { <span class="etiqueta">Postulación: {{ ep }}</span> }
+              </div>
+              @if (o.habilidades.length) {
+                <div class="oferta-tec">{{ o.habilidades.join(', ') }}</div>
+              }
+              <div class="oferta-fechas">
+                Publicada {{ o.fechaPublicacion | date:'dd/MM/yyyy' }} · Expira {{ o.fechaExpiracion | date:'dd/MM/yyyy' }}
+              </div>
+            </div>
+
+            <div class="oferta-acciones">
+              <button class="boton rojo" (click)="ver(o)">Ver oferta</button>
+            </div>
+          </article>
+        } @empty {
+          <div class="vacio">
+            {{ vigentes().length ? 'No hay ofertas que coincidan con los filtros.' : 'Por ahora no hay ofertas publicadas.' }}
+          </div>
+        }
+
+        @if (totalPaginas() > 1) {
+          <div class="paginacion">
+            <button class="boton" [disabled]="paginaActual() === 1" (click)="irAPagina(paginaActual() - 1)">Anterior</button>
+            @for (p of paginas(); track p) {
+              <button class="boton" [class.activo]="p === paginaActual()" (click)="irAPagina(p)">{{ p }}</button>
+            }
+            <button class="boton" [disabled]="paginaActual() === totalPaginas()" (click)="irAPagina(paginaActual() + 1)">Siguiente</button>
+          </div>
+        }
+
+      </section>
+    </div>
+
+  } @else {
+
+    <!-- ================= DETALLE ================= -->
+    @if (seleccionada(); as o) {
+
+      <button class="boton-texto volver" (click)="cerrar()">← Volver a las ofertas</button>
+
+      @if (!completo()) {
+        <div class="aviso">
+          <strong>No puedes aplicar todavía.</strong>
+          Completa tu perfil: te falta {{ faltantes().join(', ') }}.
+          <a routerLink="/alumno/perfil">Ir a Mi perfil</a>
+        </div>
+      }
+
+      <div class="tarjeta">
+
+        <div class="detalle-cabecera">
+          <div class="oferta-logo grande">
+            @if (o.logo) { <img [src]="o.logo" alt="Logo de {{ o.empresa }}"> }
+            @else { <span>{{ inicial(o) }}</span> }
+          </div>
+          <div class="detalle-titulo">
+            <div class="detalle-puesto">{{ o.puesto }}</div>
+            <div class="oferta-empresa">{{ o.empresa }}</div>
+            <div class="oferta-etiquetas">
+              <span class="etiqueta">{{ o.departamento }}</span>
+              <span class="etiqueta">{{ o.tipo }}</span>
+              @if (o.modalidad) { <span class="etiqueta">{{ o.modalidad }}</span> }
+            </div>
+          </div>
+        </div>
+
+        <div class="seccion-titulo">Detalles de la oferta</div>
+        <dl class="datos">
+          <div><dt>Sector</dt><dd>{{ o.sector }}</dd></div>
+          <div><dt>Vacantes disponibles</dt><dd>{{ disponibles(o) }} de {{ o.vacantes }}</dd></div>
+          <div><dt>Nivel de experiencia</dt><dd>{{ o.nivelExperiencia }}</dd></div>
+          <div><dt>Vehículo</dt><dd>{{ o.vehiculo || '—' }}</dd></div>
+          <div><dt>Salario</dt><dd>{{ salario(o.salarioMin, o.salarioMax) }}</dd></div>
+          <div class="completo"><dt>Habilidades requeridas</dt><dd>{{ o.habilidades.join(', ') || '—' }}</dd></div>
+          <div><dt>Fecha de publicación</dt><dd>{{ o.fechaPublicacion | date:'dd/MM/yyyy' }}</dd></div>
+          <div><dt>Fecha de expiración</dt><dd>{{ o.fechaExpiracion | date:'dd/MM/yyyy' }}</dd></div>
+        </dl>
+
+        <div class="seccion-titulo">Descripción de la oferta</div>
+
+        <div class="bloque-titulo">Objetivo del puesto</div>
+        <p class="texto">{{ o.objetivo }}</p>
+
+        <div class="bloque-titulo">Funciones principales</div>
+        <ul class="lista">
+          @for (l of lineas(o.funciones); track $index) { <li>{{ l }}</li> }
+        </ul>
+
+        <div class="bloque-titulo">Requisitos</div>
+        <ul class="lista">
+          @for (l of lineas(o.requisitos); track $index) { <li>{{ l }}</li> }
+        </ul>
+
+        @if (o.competencias) {
+          <div class="bloque-titulo">Competencias</div>
+          <ul class="lista">
+            @for (l of lineas(o.competencias); track $index) { <li>{{ l }}</li> }
+          </ul>
+        }
+
+        @if (o.ubicacionDetalle) {
+          <div class="bloque-titulo">Ubicación</div>
+          <p class="texto">{{ o.ubicacionDetalle }}</p>
+        }
+
+        @if (o.horarios) {
+          <div class="bloque-titulo">Horarios</div>
+          <p class="texto">{{ o.horarios }}</p>
+        }
+
+        @if (o.ofrecemos) {
+          <div class="bloque-titulo">Ofrecemos</div>
+          <ul class="lista">
+            @for (l of lineas(o.ofrecemos); track $index) { <li>{{ l }}</li> }
+          </ul>
+        }
+
+        <div class="seccion-titulo">Postularme</div>
+
+        @if (mensaje()) { <div class="nota">{{ mensaje() }}</div> }
+
+        @if (!completo()) {
+          <div class="nota">
+            Completa tu perfil para aplicar a esta oferta.
+            <a routerLink="/alumno/perfil">Ir a Mi perfil</a>
+          </div>
+        } @else {
+          @if (miPostulacion(); as p) {
+            <dl class="datos">
+              <div><dt>Estado de tu postulación</dt><dd>{{ p.estado }}</dd></div>
+              <div><dt>Fecha de postulación</dt><dd>{{ p.fechaPostulacion | date:'dd/MM/yyyy' }}</dd></div>
+            </dl>
+            <div class="acciones-aplicar">
+              @if (puedeRetirar(p)) {
+                <button class="boton" (click)="retirarPostulacion(p.id)">Retirar postulación</button>
+              }
+              @if (p.estado === 'Retirada') {
+                <button class="boton rojo" (click)="aplicar(o)">Volver a aplicar</button>
+              }
+              <a class="boton" routerLink="/alumno/postulaciones">Ver Mis postulaciones</a>
+            </div>
+          } @else {
+            <div class="nota">
+              Al aplicar, la empresa verá tu nombre, correo, teléfono, situación, año, área de especialización,
+              habilidades y experiencia laboral.
+            </div>
+            <div class="acciones-aplicar">
+              <button class="boton rojo" (click)="aplicar(o)">Aplicar a esta oferta</button>
+            </div>
+          }
+        }
+
+        @if (completo() && tieneContacto(o)) {
+          <div class="seccion-titulo">Contacto de la empresa (opcional)</div>
+          <dl class="datos">
+            <div><dt>Persona de contacto</dt><dd>{{ o.contactoNombre || '—' }}</dd></div>
+            <div><dt>Correo de contacto</dt><dd>{{ o.contactoCorreo || '—' }}</dd></div>
+            @if (o.indicaciones) {
+              <div class="completo"><dt>Indicaciones</dt><dd>{{ o.indicaciones }}</dd></div>
+            }
+          </dl>
+          @if (o.contactoCorreo) {
+            <div class="acciones-aplicar">
+              <a class="boton" [href]="enlaceCorreo(o)">Escribir por correo</a>
+              <button class="boton" (click)="copiarCorreo(o)">{{ copiado() ? 'Correo copiado' : 'Copiar correo' }}</button>
+            </div>
+          }
+        }
+
+        <div class="seccion-titulo">Más sobre la empresa</div>
+        <div class="acciones-aplicar">
+          <button class="boton" (click)="verMasDeEmpresa(o)">
+            Ver ofertas de {{ o.empresa }} ({{ cuantasDeEmpresa(o) }})
+          </button>
+          <button class="boton" (click)="verSector(o)">Ver ofertas de {{ o.sector }}</button>
+        </div>
+
+      </div>
+    }
+  }
+
+</div>

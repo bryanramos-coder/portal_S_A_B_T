@@ -3,32 +3,20 @@ import { FormsModule } from '@angular/forms';
 
 export interface Usuario {
   id: number;
-  nombre: string;
+  nombre: string;            // alumno: nombres y apellidos; empresa: nombre_empresa
   correo: string;
-
   tipo: 'Alumno' | 'Empresa' | 'Administrador';
+  estado: 'Pendiente' | 'Activa' | 'Suspendida' | 'Rechazada';  fechaRegistro: string;
+  telefono?: string;         // datos_registro.telefono
 
-  estado:
-    | 'Pendiente'
-    | 'Habilitado'
-    | 'Deshabilitado'
-    | 'Rechazado';
-
-  fechaRegistro: string;
-
-  // Solo egresados / estudiantes
-  carnet: string;
-  situacion:
-    | 'Graduado'
-    | 'Egresado'
-    | 'Estudiante de quinto año'
-    | 'En trámite de graduación';
-
-  anioGraduacion?: number;
+  // Solo alumnos
+  carnet?: string;
+  situacion?: 'Quinto año' | 'Egresado' | 'Graduado';  anio?: number;             // año de graduación o de egreso; vacío en quinto año
 
   // Solo empresas
-  telefono: string;
-  personaContacto: string;
+  contactoNombres?: string;
+  contactoApellidos?: string;
+  cargoContacto?: string;
   sitioWeb?: string;
 }
 
@@ -41,6 +29,7 @@ export interface Usuario {
 })
 export class UsuariosAdmin {
 
+  // Se llenará con los datos que devuelva la API
   usuarios = signal<Usuario[]>([]);
 
   busqueda = signal('');
@@ -48,33 +37,17 @@ export class UsuariosAdmin {
   filtroEstado = signal('');
 
   filtrados = computed(() => {
-
-    const texto = this.busqueda()
-      .trim()
-      .toLowerCase();
-
+    const texto = this.busqueda().trim().toLowerCase();
     const tipo = this.filtroTipo();
     const estado = this.filtroEstado();
 
-    return this.usuarios().filter(usuario => {
-
-      const coincideBusqueda =
-        !texto ||
-        usuario.nombre.toLowerCase().includes(texto) ||
-        usuario.correo.toLowerCase().includes(texto);
-
-      const coincideTipo =
-        !tipo || usuario.tipo === tipo;
-
-      const coincideEstado =
-        !estado || usuario.estado === estado;
-
-      return (
-        coincideBusqueda &&
-        coincideTipo &&
-        coincideEstado
-      );
-    });
+    return this.usuarios().filter(u =>
+      (!texto ||
+        u.nombre.toLowerCase().includes(texto) ||
+        u.correo.toLowerCase().includes(texto)) &&
+      (!tipo || u.tipo === tipo) &&
+      (!estado || u.estado === estado)
+    );
   });
 
   limpiarFiltros(): void {
@@ -83,87 +56,41 @@ export class UsuariosAdmin {
     this.filtroEstado.set('');
   }
 
-  /**
-   * Mostrar información del usuario.
-   * Por ahora se muestra en una ventana simple.
-   * Después podemos sustituirlo por un modal.
-   */
-  ver(usuario: Usuario): void {
+  // Por ahora se muestra en una ventana simple; después se puede cambiar por un modal.
+  ver(u: Usuario): void {
+    const l: string[] = [
+      `Nombre: ${u.nombre}`,
+      `Correo: ${u.correo}`,
+      `Tipo: ${u.tipo}`,
+      `Estado: ${u.estado}`,
+      `Fecha de registro: ${u.fechaRegistro}`,
+    ];
 
-    let informacion = `
-Nombre: ${usuario.nombre}
-Correo: ${usuario.correo}
-Tipo: ${usuario.tipo}
-Estado: ${usuario.estado}
-Fecha de registro: ${usuario.fechaRegistro}
-`;
+    if (u.telefono) l.push(`Teléfono: ${u.telefono}`);
 
-    if (usuario.carnet) {
-      informacion += `Carnet: ${usuario.carnet}\n`;
+    if (u.tipo === 'Alumno') {
+      if (u.carnet) l.push(`Carnet: ${u.carnet}`);
+      if (u.situacion) l.push(`Situación: ${u.situacion}`);
+      if (u.anio) {
+        l.push(`${u.situacion === 'Egresado' ? 'Año de egreso' : 'Año de graduación'}: ${u.anio}`);
+      }
     }
 
-    if (usuario.situacion) {
-      informacion += `Situación: ${usuario.situacion}\n`;
+    if (u.tipo === 'Empresa') {
+      const contacto = `${u.contactoNombres ?? ''} ${u.contactoApellidos ?? ''}`.trim();
+      if (contacto) l.push(`Persona de contacto: ${contacto}`);
+      if (u.cargoContacto) l.push(`Cargo del contacto: ${u.cargoContacto}`);
+      if (u.sitioWeb) l.push(`Sitio web: ${u.sitioWeb}`);
     }
 
-    if (usuario.anioGraduacion) {
-      informacion += `Año de graduación: ${usuario.anioGraduacion}\n`;
-    }
-
-    if (usuario.telefono) {
-      informacion += `Teléfono: ${usuario.telefono}\n`;
-    }
-
-    if (usuario.personaContacto) {
-      informacion += `Persona de contacto: ${usuario.personaContacto}\n`;
-    }
-
-    if (usuario.sitioWeb) {
-      informacion += `Sitio web: ${usuario.sitioWeb}\n`;
-    }
-
-    alert(informacion);
+    alert(l.join('\n'));
   }
 
-  /**
-   * Habilitar usuario
-   */
-  habilitar(usuario: Usuario): void {
-
-    this.usuarios.update(lista =>
-      lista.map(u =>
-        u.id === usuario.id
-          ? { ...u, estado: 'Habilitado' }
-          : u
-      )
-    );
-  }
-
-  /**
-   * Deshabilitar usuario
-   */
-  deshabilitar(usuario: Usuario): void {
-
-    this.usuarios.update(lista =>
-      lista.map(u =>
-        u.id === usuario.id
-          ? { ...u, estado: 'Deshabilitado' }
-          : u
-      )
-    );
-  }
-
-  /**
-   * Rechazar usuario
-   */
-  rechazar(usuario: Usuario): void {
-
-    this.usuarios.update(lista =>
-      lista.map(u =>
-        u.id === usuario.id
-          ? { ...u, estado: 'Rechazado' }
-          : u
-      )
-    );
+ activar(u: Usuario): void { this.cambiarEstado(u, 'Activa'); }
+  suspender(u: Usuario): void { this.cambiarEstado(u, 'Suspendida'); }
+  rechazar(u: Usuario): void { this.cambiarEstado(u, 'Rechazada'); }
+  
+  private cambiarEstado(u: Usuario, estado: Usuario['estado']): void {
+    this.usuarios.update(lista => lista.map(x => (x.id === u.id ? { ...x, estado } : x)));
   }
 }

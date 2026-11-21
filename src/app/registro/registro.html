@@ -21,21 +21,22 @@
           <label class="QueTipo">¿Qué tipo de cuenta quieres crear?</label>
         </div>
         <div class="tipo-opciones">
-          <!-- Dentro de @case ('tipo') -->
           <button type="button" class="btn-submit" (click)="paso.set('alumno')">
-           Graduado o estudiante
+            Graduado o estudiante
           </button>
           <button type="button" class="btn-submit" (click)="paso.set('empresa')">Empresa</button>
         </div>
       }
 
       @case ('alumno') {
-      <form style="width: 100%" [formGroup]="alumno" (ngSubmit)="enviar('alumno')">          <label for="g-apellido">Apellidos</label>
+        <form style="width: 100%" [formGroup]="alumno" (ngSubmit)="enviar('alumno')">
+          <label for="g-apellido">Apellidos</label>
           <div class="form-group">
             <input
               type="text"
               id="g-apellido"
               formControlName="apellido"
+              maxlength="100"
               placeholder="Ej: Arevalo Melara"
             />
           </div>
@@ -46,6 +47,7 @@
               type="text"
               id="g-nombre"
               formControlName="nombre"
+              maxlength="100"
               placeholder="Ej: Juan Natanael"
             />
           </div>
@@ -56,6 +58,7 @@
               type="email"
               id="g-correo"
               formControlName="correo"
+              maxlength="150"
               placeholder="Ej: estudiante@gmail.com"
             />
           </div>
@@ -66,6 +69,7 @@
               type="tel"
               id="g-telefono"
               formControlName="telefono"
+              maxlength="20"
               placeholder="Ej: +503 2222-3333"
             />
           </div>
@@ -76,6 +80,7 @@
               type="text"
               id="g-carnet"
               formControlName="carnet"
+              maxlength="8"
               placeholder="Ej: RC23011"
               title="El carné debe iniciar con dos letras mayúsculas seguidas de números (Ej: RC23011)"
             />
@@ -137,6 +142,7 @@
               type="text"
               id="e-empresa"
               formControlName="empresa"
+              maxlength="150"
               placeholder="Ej: Central American Software Services"
             />
           </div>
@@ -147,17 +153,30 @@
               type="email"
               id="e-correo"
               formControlName="correo"
+              maxlength="150"
               placeholder="Ej: empresa@gmail.com"
             />
           </div>
 
-          <label for="e-contacto">Persona de contacto</label>
+          <label for="e-contacto-nombres">Nombres de la persona de contacto</label>
           <div class="form-group">
             <input
               type="text"
-              id="e-contacto"
-              formControlName="contacto"
-              placeholder="Ej: Ramon Alberto Muñoz Gonzales"
+              id="e-contacto-nombres"
+              formControlName="contactoNombres"
+              maxlength="100"
+              placeholder="Ej: Ramon Alberto"
+            />
+          </div>
+
+          <label for="e-contacto-apellidos">Apellidos de la persona de contacto</label>
+          <div class="form-group">
+            <input
+              type="text"
+              id="e-contacto-apellidos"
+              formControlName="contactoApellidos"
+              maxlength="100"
+              placeholder="Ej: Muñoz Gonzales"
             />
           </div>
 
@@ -167,16 +186,18 @@
               type="tel"
               id="e-telefono"
               formControlName="telefono"
+              maxlength="20"
               placeholder="Ej: +503 2222-3333"
             />
           </div>
 
-          <label for="e-web">Sitio web</label>
+          <label for="e-web">Sitio web (opcional)</label>
           <div class="form-group">
             <input
               type="url"
               id="e-web"
               formControlName="web"
+              maxlength="200"
               placeholder="https://empresa.com.sv"
             />
           </div>
