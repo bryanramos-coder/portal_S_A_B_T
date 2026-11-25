@@ -42,3 +42,12 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# .NET / Visual Studio
+backend/**/bin/
+backend/**/obj/
+backend/.vs/
+*.user
+*.suo
+appsettings.Development.json
+backend/PortalGraduados.Api/wwwroot/uploads/

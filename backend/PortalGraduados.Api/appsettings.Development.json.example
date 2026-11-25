@@ -1,0 +1,8 @@
+{
+  "ConnectionStrings": {
+    "Default": "Host=localhost;Port=5434;Database=portal_graduados_db;Username=portal_admin;Password=CAMBIAR_CLAVE"
+  },
+  "Jwt": {
+    "Key": "CAMBIAR_POR_UNA_CLAVE_SECRETA_DE_MINIMO_32_CARACTERES"
+  }
+}
