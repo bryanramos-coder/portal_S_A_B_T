@@ -336,3 +336,12 @@
 
         
 .ng-touched.ng-invalid:not(form):not(.campo-clave):not(.terminos) { border-color: #c0392b; }
+
+@page { margin: 14mm; }
+
+@media print {
+  app-barra-lateral, app-barra-superior, app-footer { display: none !important; }
+  .panel { display: block !important; min-height: 0 !important; }
+  body { display: block !important; min-height: 0 !important; background: #fff !important; color: #000 !important; }
+  *, *::before, *::after { background: transparent !important; box-shadow: none !important; }
+}
